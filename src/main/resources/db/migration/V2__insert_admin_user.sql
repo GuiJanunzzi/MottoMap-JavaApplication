@@ -5,4 +5,4 @@ INSERT INTO filial
 
 INSERT INTO usuario
     (nome, username, password, cargo_usuario, filial_id) VALUES
-    ('Admin Geral', 'admin@mottomap.com', 'admin', 'ADM_GERAL', 1);
+    ('Admin Geral', 'admin@mottomap.com', '$2a$10$xSAFeotUwNG7FQ555d.q1etGWtyyaiR.EebJ/YStDAZl1zA9Qbg4i', 'ADM_GERAL', 1);
