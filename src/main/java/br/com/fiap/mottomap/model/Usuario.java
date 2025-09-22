@@ -9,13 +9,19 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Collection;
+import java.util.List;
 
 @Entity
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Usuario {
+public class Usuario implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -40,4 +46,32 @@ public class Usuario {
     @NotNull(message = "campo obrigatório")
     @ManyToOne
     private Filial filial;
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        // O "papel" ou "permissão" do usuário.
+        return List.of(new SimpleGrantedAuthority(cargoUsuario.name()));
+    }
+
+    // O Spring Security usa este método internamente, já está correto.
+    @Override
+    public String getPassword() {
+        return this.password;
+    }
+
+    // O Spring Security usa este método para identificar o usuário.
+    @Override
+    public String getUsername() {
+        return this.username;
+    }
+
+    // Para o projeto, podemos deixar todos como 'true'
+    @Override
+    public boolean isAccountNonExpired() { return true; }
+    @Override
+    public boolean isAccountNonLocked() { return true; }
+    @Override
+    public boolean isCredentialsNonExpired() { return true; }
+    @Override
+    public boolean isEnabled() { return true; }
 }
