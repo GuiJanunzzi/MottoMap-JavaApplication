@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Formulário de Moto</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-4">
+    <h1 th:if="${moto.id == null}">Cadastrar Nova Moto</h1>
+    <h1 th:unless="${moto.id == null}">Editar Moto</h1>
+    <hr>
+
+    <form th:action="@{/motos}" th:object="${moto}" method="post">
+        <input type="hidden" th:field="*{id}" />
+
+        <div class="mb-3">
+            <label for="placa" class="form-label">Placa</label>
+            <input type="text" class="form-control" id="placa" th:field="*{placa}" required>
+        </div>
+        <div class="mb-3">
+            <label for="chassi" class="form-label">Chassi</label>
+            <input type="text" class="form-control" id="chassi" th:field="*{chassi}" required>
+        </div>
+        <div class="mb-3">
+            <label for="modeloMoto" class="form-label">Modelo</label>
+            <select class="form-select" id="modeloMoto" th:field="*{modeloMoto}" required>
+                <option th:each="modelo : ${T(br.com.fiap.mottomap.model.ModeloMoto).values()}"
+                        th:value="${modelo}" th:text="${modelo}"></option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="ano" class="form-label">Ano</label>
+            <input type="number" class="form-control" id="ano" th:field="*{ano}" required>
+        </div>
+        <div class="mb-3">
+            <label for="statusMoto" class="form-label">Status</label>
+            <select class="form-select" id="statusMoto" th:field="*{statusMoto}" required>
+                <option th:each="status : ${T(br.com.fiap.mottomap.model.StatusMoto).values()}"
+                        th:value="${status}" th:text="${status}"></option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="filial" class="form-label">Filial</label>
+            <select class="form-select" id="filial" th:field="*{filial}" required>
+                <option th:each="filial : ${filiais}"
+                        th:value="${filial.id}" th:text="${filial.nome}"></option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Salvar</button>
+        <a th:href="@{/motos}" class="btn btn-secondary">Cancelar</a>
+    </form>
+
+</div>
+</body>
+</html>
