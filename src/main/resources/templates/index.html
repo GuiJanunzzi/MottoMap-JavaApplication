@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/_header :: header}"></head>
+
+<body>
+
+<nav th:replace="~{fragments/_header :: navbar}"></nav>
+
+<main class="container">
+    <div class="p-5 mb-4 bg-light rounded-3">
+        <div class="container-fluid py-5">
+            <h1 class="display-5 fw-bold">Bem-vindo ao MotoMap!</h1>
+            <p class="col-md-8 fs-4">O sistema de gerenciamento de pátios da Mottu.</p>
+            <p>Use o menu de navegação acima para começar a gerenciar as motos e filiais.</p>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/_footer :: footer}"></footer>
+
+</body>
+</html>
