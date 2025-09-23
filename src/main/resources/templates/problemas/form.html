@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/_header :: header}"></head>
+
+<body>
+
+<nav th:replace="~{fragments/_header :: navbar}"></nav>
+
+<div class="container mt-4">
+    <h1>Registrar Problema para a Moto <span class="text-primary" th:text="${moto.placa}"></span></h1>
+    <hr>
+
+    <form th:action="@{/problemas}" th:object="${problema}" method="post">
+
+        <input type="hidden" name="motoId" th:value="${moto.id}" />
+
+        <div class="mb-3">
+            <label for="tipoProblema" class="form-label">Tipo do Problema</label>
+            <select class="form-select" id="tipoProblema" th:field="*{tipoProblema}" required>
+                <option th:each="tipo : ${T(br.com.fiap.mottomap.model.TipoProblema).values()}"
+                        th:value="${tipo}" th:text="${tipo}"></option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label for="descricao" class="form-label">Descrição Detalhada</label>
+            <textarea class="form-control" id="descricao" rows="4" th:field="*{descricao}" required></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Registrar Problema</button>
+        <a th:href="@{/motos}" class="btn btn-secondary">Cancelar</a>
+    </form>
+
+</div>
+
+<footer th:replace="~{fragments/_footer :: footer}"></footer>
+
+</body>
+</html>

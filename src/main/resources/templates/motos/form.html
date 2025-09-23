@@ -17,33 +17,36 @@
 
         <div class="mb-3">
             <label for="placa" class="form-label">Placa</label>
-            <input type="text" class="form-control" id="placa" th:field="*{placa}" required>
+            <input type="text" class="form-control" th:field="*{placa}">
+            <div class="text-danger" th:if="${#fields.hasErrors('placa')}" th:errors="*{placa}"></div>
         </div>
         <div class="mb-3">
             <label for="chassi" class="form-label">Chassi</label>
-            <input type="text" class="form-control" id="chassi" th:field="*{chassi}" required>
+            <input type="text" class="form-control" th:field="*{chassi}">
+            <div class="text-danger" th:if="${#fields.hasErrors('chassi')}" th:errors="*{chassi}"></div>
         </div>
         <div class="mb-3">
             <label for="modeloMoto" class="form-label">Modelo</label>
-            <select class="form-select" id="modeloMoto" th:field="*{modeloMoto}" required>
+            <select class="form-select" th:field="*{modeloMoto}">
                 <option th:each="modelo : ${T(br.com.fiap.mottomap.model.ModeloMoto).values()}"
                         th:value="${modelo}" th:text="${modelo}"></option>
             </select>
         </div>
         <div class="mb-3">
             <label for="ano" class="form-label">Ano</label>
-            <input type="number" class="form-control" id="ano" th:field="*{ano}" required>
+            <input type="number" class="form-control" th:field="*{ano}">
+            <div class="text-danger" th:if="${#fields.hasErrors('ano')}" th:errors="*{ano}"></div>
         </div>
         <div class="mb-3">
             <label for="statusMoto" class="form-label">Status</label>
-            <select class="form-select" id="statusMoto" th:field="*{statusMoto}" required>
+            <select class="form-select" th:field="*{statusMoto}">
                 <option th:each="status : ${T(br.com.fiap.mottomap.model.StatusMoto).values()}"
                         th:value="${status}" th:text="${status}"></option>
             </select>
         </div>
         <div class="mb-3">
             <label for="filial" class="form-label">Filial</label>
-            <select class="form-select" id="filial" th:field="*{filial}" required>
+            <select class="form-select" th:field="*{filial}">
                 <option th:each="filial : ${filiais}"
                         th:value="${filial.id}" th:text="${filial.nome}"></option>
             </select>
@@ -52,7 +55,6 @@
         <button type="submit" class="btn btn-primary">Salvar</button>
         <a th:href="@{/motos}" class="btn btn-secondary">Cancelar</a>
     </form>
-
 </div>
 
 <footer th:replace="~{fragments/_footer :: footer}"></footer>

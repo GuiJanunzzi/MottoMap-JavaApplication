@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/_header :: header}"></head>
+
+<body>
+<nav th:replace="~{fragments/_header :: navbar}"></nav>
+
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header">
+            <h3>Detalhes da Moto</h3>
+        </div>
+        <div class="card-body">
+            <p><strong>Placa:</strong> <span th:text="${moto.placa}"></span></p>
+            <p><strong>Chassi:</strong> <span th:text="${moto.chassi}"></span></p>
+            <p><strong>Modelo:</strong> <span th:text="${moto.modeloMoto}"></span></p>
+            <p><strong>Ano:</strong> <span th:text="${moto.ano}"></span></p>
+            <p><strong>Status:</strong> <span th:text="${moto.statusMoto}"></span></p>
+            <p><strong>Filial:</strong> <span th:text="${moto.filial.nome}"></span></p>
+        </div>
+    </div>
+
+    <h3 class="mt-5">Histórico de Problemas</h3>
+    <hr>
+
+    <div th:if="${problemas.isEmpty()}" class="alert alert-info">
+        Nenhum problema registrado para esta moto.
+    </div>
+
+    <table class="table table-striped" th:unless="${problemas.isEmpty()}">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Tipo</th>
+            <th>Descrição</th>
+            <th>Data</th>
+            <th>Reportado por</th>
+            <th>Resolvido?</th>
+            <th>Ações</th> </tr>
+        </thead>
+        <tbody>
+        <tr th:each="problema : ${problemas}">
+            <td th:text="${problema.id}"></td>
+            <td th:text="${problema.tipoProblema}"></td>
+            <td th:text="${problema.descricao}"></td>
+            <td th:text="${#temporals.format(problema.dataRegistro, 'dd/MM/yyyy')}"></td>
+            <td th:text="${problema.usuario.nome}"></td>
+            <td>
+                <span th:if="${problema.resolvido}" class="badge bg-success">Sim</span>
+                <span th:unless="${problema.resolvido}" class="badge bg-danger">Não</span>
+            </td>
+            <td>
+                <a th:if="${!problema.resolvido}"
+                   th:href="@{/problemas/resolver/{id}(id=${problema.id})}"
+                   class="btn btn-sm btn-success">Resolver</a>
+
+                <a th:href="@{/problemas/delete/{id}(id=${problema.id})}"
+                   class="btn btn-sm btn-danger"
+                   onclick="return confirm('Tem certeza que deseja excluir este registro de problema?')">Excluir</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <a th:href="@{/motos}" class="btn btn-secondary mt-3">Voltar para a Lista</a>
+</div>
+
+<footer th:replace="~{fragments/_footer :: footer}"></footer>
+</body>
+</html>

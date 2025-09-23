@@ -37,8 +37,10 @@
             <td th:text="${moto.ano}"></td>
             <td th:text="${moto.filial.nome}"></td>
             <td>
+                <a th:href="@{/motos/{id}(id=${moto.id})}" class="btn btn-sm btn-secondary">Detalhes</a>
                 <a th:href="@{/motos/edit/{id}(id=${moto.id})}" class="btn btn-sm btn-warning" sec:authorize="hasAnyAuthority('ADM_GERAL', 'ADM_LOCAL')">Editar</a>
                 <a th:href="@{/motos/delete/{id}(id=${moto.id})}" class="btn btn-sm btn-danger" onclick="return confirm('Tem certeza que deseja excluir?')" sec:authorize="hasAuthority('ADM_GERAL')">Excluir</a>
+                <a th:href="@{/problemas/new/{motoId}(motoId=${moto.id})}" class="btn btn-sm btn-info">Reportar Problema</a>
             </td>
         </tr>
         </tbody>
