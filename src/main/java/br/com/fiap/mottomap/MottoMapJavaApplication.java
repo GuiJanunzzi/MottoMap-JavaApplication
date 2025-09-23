@@ -11,7 +11,7 @@ public class MottoMapJavaApplication {
 
         SpringApplication.run(MottoMapJavaApplication.class, args);
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        System.out.println(encoder.encode("admin")); // gerando senha para testes
+        System.out.println(encoder.encode("local123")); // gerando senha para testes
     }
 
 }
