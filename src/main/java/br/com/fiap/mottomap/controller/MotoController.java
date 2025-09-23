@@ -41,7 +41,7 @@ public class MotoController {
         if (result.hasErrors()) {
             return "motos/form";
         }
-        motoService.salvar(moto); 
+        motoService.salvar(moto);
         redirectAttributes.addFlashAttribute("successMessage", "Moto salva com sucesso!");
         return "redirect:/motos";
     }
