@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 
 <head th:replace="~{fragments/_header :: header}"></head>
 
@@ -53,9 +53,11 @@
             <td>
                 <a th:if="${!problema.resolvido}"
                    th:href="@{/problemas/resolver/{id}(id=${problema.id})}"
+                   sec:authorize="hasAuthority('COL_MECANICO')"
                    class="btn btn-sm btn-success">Resolver</a>
 
                 <a th:href="@{/problemas/delete/{id}(id=${problema.id})}"
+                   sec:authorize="hasAuthority('ADM_LOCAL')"
                    class="btn btn-sm btn-danger"
                    onclick="return confirm('Tem certeza que deseja excluir este registro de problema?')">Excluir</a>
             </td>

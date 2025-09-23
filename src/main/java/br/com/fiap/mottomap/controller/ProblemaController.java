@@ -3,6 +3,7 @@ package br.com.fiap.mottomap.controller;
 import br.com.fiap.mottomap.model.Problema;
 import br.com.fiap.mottomap.service.MotoService;
 import br.com.fiap.mottomap.service.ProblemaService; // IMPORTAR O SERVICE
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -41,6 +42,7 @@ public class ProblemaController {
         return "redirect:/motos";
     }
 
+    @PreAuthorize("hasAuthority('COL_MECANICO')")
     @GetMapping("/resolver/{id}")
     public String marcarComoResolvido(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         problemaService.marcarComoResolvido(id);
@@ -51,6 +53,7 @@ public class ProblemaController {
         return "redirect:/motos/" + motoId;
     }
 
+    @PreAuthorize("hasAuthority('ADM_LOCAL')")
     @GetMapping("/delete/{id}")
     public String deletarProblema(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         Long motoId = problemaService.buscarPorId(id).getMoto().getId();
