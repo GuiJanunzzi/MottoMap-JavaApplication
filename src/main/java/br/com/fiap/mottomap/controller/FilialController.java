@@ -2,6 +2,7 @@ package br.com.fiap.mottomap.controller;
 
 import br.com.fiap.mottomap.model.Filial;
 import br.com.fiap.mottomap.service.FilialService; // Importe o service
+import br.com.fiap.mottomap.service.PatioService;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,9 +15,11 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class FilialController {
 
     private final FilialService filialService;
+    private final PatioService patioService;
 
-    public FilialController(FilialService filialService) {
+    public FilialController(FilialService filialService, PatioService patioService) {
         this.filialService = filialService;
+        this.patioService = patioService;
     }
 
     @GetMapping
@@ -56,5 +59,13 @@ public class FilialController {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
         }
         return "redirect:/filiais";
+    }
+
+    @GetMapping("/{id}/patio")
+    public String verPatio(@PathVariable Long id, Model model) {
+        Filial filial = filialService.buscarPorId(id);
+        model.addAttribute("filial", filial);
+        model.addAttribute("gradePatio", patioService.montarGradePatio(filial));
+        return "filiais/patio";
     }
 }

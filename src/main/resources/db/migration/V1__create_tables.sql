@@ -32,7 +32,7 @@ CREATE TABLE moto
     ano INT NOT NULL,
     status_moto VARCHAR(50) NOT NULL,
     filial_id BIGINT NOT NULL,
-    CONSTRAINT moto_pkey PRIMARY KEY (id), -- Adicionado
+    CONSTRAINT moto_pkey PRIMARY KEY (id),
     FOREIGN KEY (filial_id) REFERENCES filial(id)
 );
 
@@ -44,9 +44,12 @@ CREATE TABLE posicao_patio
     numero_coluna INT NOT NULL,
     area VARCHAR(50) NOT NULL,
     ocupado BOOLEAN NOT NULL,
+    moto_id BIGINT,
     filial_id BIGINT NOT NULL,
-    CONSTRAINT posicao_patio_pkey PRIMARY KEY (id), -- Adicionado
-    FOREIGN KEY (filial_id) REFERENCES filial(id)
+    CONSTRAINT posicao_patio_pkey PRIMARY KEY (id),
+    CONSTRAINT fk_posicao_patio_filial FOREIGN KEY (filial_id) REFERENCES filial(id),
+    CONSTRAINT uk_posicao_patio_moto_id UNIQUE (moto_id),
+    CONSTRAINT fk_posicao_patio_moto FOREIGN KEY (moto_id) REFERENCES moto(id)
 );
 
 CREATE TABLE problema

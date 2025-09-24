@@ -1,20 +1,11 @@
 package br.com.fiap.mottomap.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Data
@@ -48,4 +39,8 @@ public class PosicaoPatio {
     @NotNull(message = "campo obrigatório")
     @ManyToOne
     private Filial filial;
+
+    @OneToOne
+    @JoinColumn(name = "moto_id", unique = true) // A posição da moto deve ser única
+    private Moto moto;
 }

@@ -35,4 +35,8 @@ public class MotoService {
         Moto motoParaDeletar = buscarPorId(id);
         motoRepository.delete(motoParaDeletar);
     }
+
+    public List<Moto> buscarMotosSemPosicao(Long filialId) {
+        return motoRepository.findMotosSemPosicaoNaFilial(filialId);
+    }
 }

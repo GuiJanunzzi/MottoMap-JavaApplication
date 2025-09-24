@@ -34,6 +34,7 @@
             <td th:text="${filial.cidade}"></td>
             <td th:text="${filial.siglaEstado}"></td>
             <td>
+                <a th:href="@{/filiais/{id}/patio(id=${filial.id})}" class="btn btn-sm btn-info">Ver Pátio</a>
                 <a th:href="@{/filiais/edit/{id}(id=${filial.id})}" class="btn btn-sm btn-warning">Editar</a>
                 <a th:href="@{/filiais/delete/{id}(id=${filial.id})}" class="btn btn-sm btn-danger" onclick="return confirm('Tem certeza que deseja excluir?')">Excluir</a>
             </td>
