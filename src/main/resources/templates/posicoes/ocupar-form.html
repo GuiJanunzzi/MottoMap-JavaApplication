@@ -2,17 +2,13 @@
 <html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
 
 <head th:replace="~{fragments/_header :: header}"></head>
-
 <body>
 <nav th:replace="~{fragments/_header :: navbar}"></nav>
-
 <div class="container mt-4">
     <h1>Alocar Moto na Posição <span class="text-primary" th:text="${posicao.identificacao}"></span></h1>
     <hr>
-
     <form th:action="@{/posicoes/ocupar}" method="post">
         <input type="hidden" name="posicaoId" th:value="${posicao.id}" />
-
         <div class="mb-3">
             <label for="motoId" class="form-label">Selecione uma moto disponível:</label>
             <select class="form-select" id="motoId" name="motoId" required>
@@ -22,17 +18,13 @@
                         th:text="${moto.placa + ' - ' + moto.modeloMoto}"></option>
             </select>
         </div>
-
         <div th:if="${motosDisponiveis.isEmpty()}" class="alert alert-warning">
             Não há motos disponíveis nesta filial para alocação.
         </div>
-
         <button type="submit" class="btn btn-primary" th:unless="${motosDisponiveis.isEmpty()}">Alocar Moto</button>
         <a th:href="@{/filiais/{id}/patio(id=${posicao.filial.id})}" class="btn btn-secondary">Cancelar</a>
     </form>
-
 </div>
-
 <footer th:replace="~{fragments/_footer :: footer}"></footer>
 </body>
 </html>

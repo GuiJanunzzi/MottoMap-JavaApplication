@@ -2,75 +2,46 @@
 <html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
 
 <head th:replace="~{fragments/_header :: header}"></head>
-
 <style>
-    .patio-grid {
-        display: grid;
-        border: 2px solid #333;
-    }
-    .patio-cell {
-        border: 1px solid #ccc;
-        padding: 10px;
-        text-align: center;
-        min-height: 80px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-    }
-    .ocupado {
-        background-color: #f8d7da; /* Vermelho claro */
-        font-weight: bold;
-    }
-    .vazio {
-        background-color: #d1e7dd; /* Verde claro */
-        color: #555;
-    }
+    .patio-grid { display: grid; border: 2px solid #333; }
+    .patio-cell { border: 1px solid #ccc; padding: 10px; text-align: center; min-height: 100px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+    .ocupado { background-color: #f8d7da; font-weight: bold; }
+    .vazio { background-color: #d1e7dd; color: #555; }
+    .ocupado:hover { background-color: #f1c2c5; }
+    .vazio:hover { background-color: #b8d6c5; }
 </style>
 
 <body>
-
 <nav th:replace="~{fragments/_header :: navbar}"></nav>
-
 <div class="container mt-4">
-    <h1>Mapa do Pátio: <span th:text="${filial.nome}"></span></h1>
-    <p>Visão geral das posições e motos no pátio.</p>
+    <h1>Mapa do Pátio: <span th.text="${filial.nome}"></span></h1>
     <hr>
+    <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
 
     <div class="patio-grid" th:style="'grid-template-columns: repeat(' + ${filial.numeroColuna} + ', 1fr);'">
-        <div th:each="linha : ${#numbers.sequence(1, filial.numeroLinha)}">
-            <div th:each="coluna : ${#numbers.sequence(1, filial.numeroColuna)}">
-
+        <th:block th:each="linha : ${#numbers.sequence(1, filial.numeroLinha)}">
+            <th:block th:each="coluna : ${#numbers.sequence(1, filial.numeroColuna)}">
                 <div th:with="posicao=${gradePatio.get(linha)?.get(coluna)}">
-
                     <th:block th:if="${posicao != null}">
-
-                        <th:block th:if="${posicao.moto != null}">
-                            <a th:href="@{/motos/{id}(id=${posicao.moto.id})}"
-                               class="patio-cell ocupado text-decoration-none text-dark"
-                               th:title="${posicao.moto.modeloMoto + ' - ' + posicao.moto.ano}">
+                        <div th:if="${posicao.moto != null}" class="patio-cell ocupado">
+                            <a th:href="@{/motos/{id}(id=${posicao.moto.id})}" class="text-decoration-none text-dark" th:title="${posicao.moto.modeloMoto}">
                                 <span th:text="${posicao.moto.placa}"></span>
                                 <small th:text="${posicao.identificacao}"></small>
                             </a>
-                        </th:block>
-
-                        <th:block th:if="${posicao.moto == null}">
-                            <a th:href="@{/posicoes/{id}/ocupar(id=${posicao.id})}"
-                               class="patio-cell vazio text-decoration-none text-dark">
-                                <span th:text="${posicao.identificacao}"></span>
-                                <small>Vazio</small>
-                            </a>
-                        </th:block>
-
+                            <a th:href="@{/posicoes/{id}/liberar(id=${posicao.id})}" class="btn btn-sm btn-outline-danger mt-2">Liberar</a>
+                        </div>
+                        <a th:if="${posicao.moto == null}" th:href="@{/posicoes/{id}/ocupar(id=${posicao.id})}" class="patio-cell vazio text-decoration-none text-dark">
+                            <span th:text="${posicao.identificacao}"></span>
+                            <small>Vazio</small>
+                        </a>
                     </th:block>
-
                     <div th:if="${posicao == null}" class="patio-cell"></div>
                 </div>
-            </div>
-        </div>
+            </th:block>
+        </th:block>
     </div>
 
-    <a th:href="@{/filiais}" class="btn btn-secondary mt-4">Voltar para a Lista de Filiais</a>
+    <a th:href="@{/filiais}" class="btn btn-secondary mt-4">Voltar</a>
 </div>
 
 <footer th:replace="~{fragments/_footer :: footer}"></footer>

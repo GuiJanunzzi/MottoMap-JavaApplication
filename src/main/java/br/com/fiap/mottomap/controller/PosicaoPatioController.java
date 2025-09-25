@@ -2,7 +2,7 @@ package br.com.fiap.mottomap.controller;
 
 import br.com.fiap.mottomap.repository.PosicaoPatioRepository;
 import br.com.fiap.mottomap.service.MotoService;
-import br.com.fiap.mottomap.service.PatioService;
+import br.com.fiap.mottomap.service.PosicaoPatioService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -12,12 +12,12 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequestMapping("/posicoes")
 public class PosicaoPatioController {
 
-    private final PatioService patioService;
+    private final PosicaoPatioService posicaoPatioService;
     private final PosicaoPatioRepository posicaoPatioRepository;
     private final MotoService motoService;
 
-    public PosicaoPatioController(PatioService posService, PosicaoPatioRepository posRepo, MotoService motoSvc) {
-        this.patioService = posService;
+    public PosicaoPatioController(PosicaoPatioService posService, PosicaoPatioRepository posRepo, MotoService motoSvc) {
+        this.posicaoPatioService = posService;
         this.posicaoPatioRepository = posRepo;
         this.motoService = motoSvc;
     }
@@ -25,18 +25,24 @@ public class PosicaoPatioController {
     @GetMapping("/{id}/ocupar")
     public String mostrarFormularioOcupar(@PathVariable Long id, Model model) {
         var posicao = posicaoPatioRepository.findById(id).orElseThrow();
-        var motosDisponiveis = motoService.buscarMotosSemPosicao(posicao.getFilial().getId());
-
         model.addAttribute("posicao", posicao);
-        model.addAttribute("motosDisponiveis", motosDisponiveis);
+        model.addAttribute("motosDisponiveis", motoService.buscarMotosSemPosicao(posicao.getFilial().getId()));
         return "posicoes/ocupar-form";
     }
 
     @PostMapping("/ocupar")
-    public String ocuparPosicao(@RequestParam Long posicaoId, @RequestParam Long motoId, RedirectAttributes redirectAttributes) {
-        patioService.ocuparPosicao(posicaoId, motoId);
+    public String ocuparPosicao(@RequestParam Long posicaoId, @RequestParam Long motoId, RedirectAttributes attrs) {
+        posicaoPatioService.ocuparPosicao(posicaoId, motoId);
         var filialId = posicaoPatioRepository.findById(posicaoId).get().getFilial().getId();
-        redirectAttributes.addFlashAttribute("successMessage", "Moto alocada com sucesso!");
+        attrs.addFlashAttribute("successMessage", "Moto alocada com sucesso!");
+        return "redirect:/filiais/" + filialId + "/patio";
+    }
+
+    @GetMapping("/{id}/liberar")
+    public String liberarPosicao(@PathVariable Long id, RedirectAttributes attrs) {
+        var filialId = posicaoPatioRepository.findById(id).get().getFilial().getId();
+        posicaoPatioService.liberarPosicao(id);
+        attrs.addFlashAttribute("successMessage", "Posição liberada com sucesso!");
         return "redirect:/filiais/" + filialId + "/patio";
     }
 }

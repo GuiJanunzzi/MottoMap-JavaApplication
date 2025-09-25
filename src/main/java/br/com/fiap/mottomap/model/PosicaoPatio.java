@@ -41,6 +41,6 @@ public class PosicaoPatio {
     private Filial filial;
 
     @OneToOne
-    @JoinColumn(name = "moto_id", unique = true) // A posição da moto deve ser única
+    @JoinColumn(name = "moto_id", unique = true)
     private Moto moto;
 }
