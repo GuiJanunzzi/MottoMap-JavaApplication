@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/_header :: header}"></head>
+<body>
+<nav th:replace="~{fragments/_header :: navbar}"></nav>
+<div class="container mt-4">
+    <h1>Gerenciamento de Posições do Pátio</h1>
+    <hr>
+    <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+    <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+    <a th:href="@{/posicoes/new}" class="btn btn-primary mb-3">Cadastrar Nova Posição</a>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Identificação</th>
+            <th>Filial</th>
+            <th>Linha/Coluna</th>
+            <th>Ocupado por</th>
+            <th>Ações</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="posicao : ${posicoes}">
+            <td th:text="${posicao.id}"></td>
+            <td th:text="${posicao.identificacao}"></td>
+            <td th:text="${posicao.filial.nome}"></td>
+            <td th:text="${posicao.numeroLinha + ' / ' + posicao.numeroColuna}"></td>
+            <td>
+                <span th:if="${posicao.moto != null}" class="badge bg-danger" th:text="${posicao.moto.placa}"></span>
+                <span th:if="${posicao.moto == null}" class="badge bg-success">Vazio</span>
+            </td>
+            <td>
+                <a th:href="@{/posicoes/edit/{id}(id=${posicao.id})}" class="btn btn-sm btn-warning">Editar</a>
+                <a th:href="@{/posicoes/delete/{id}(id=${posicao.id})}" class="btn btn-sm btn-danger" onclick="return confirm('Tem certeza?')">Excluir</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<footer th:replace="~{fragments/_footer :: footer}"></footer>
+</body>
+</html>

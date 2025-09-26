@@ -22,19 +22,30 @@
         <th:block th:each="linha : ${#numbers.sequence(1, filial.numeroLinha)}">
             <th:block th:each="coluna : ${#numbers.sequence(1, filial.numeroColuna)}">
                 <div th:with="posicao=${gradePatio.get(linha)?.get(coluna)}">
+
                     <th:block th:if="${posicao != null}">
-                        <div th:if="${posicao.moto != null}" class="patio-cell ocupado">
-                            <a th:href="@{/motos/{id}(id=${posicao.moto.id})}" class="text-decoration-none text-dark" th:title="${posicao.moto.modeloMoto}">
-                                <span th:text="${posicao.moto.placa}"></span>
-                                <small th:text="${posicao.identificacao}"></small>
-                            </a>
-                            <a th:href="@{/posicoes/{id}/liberar(id=${posicao.id})}" class="btn btn-sm btn-outline-danger mt-2">Liberar</a>
+
+                        <div th:if="${posicao.moto != null}" class="patio-cell ocupado position-relative">
+                            <a th:href="@{/motos/{id}(id=${posicao.moto.id})}" class="stretched-link"
+                               th:title="${'Ver detalhes da moto ' + posicao.moto.placa}"></a>
+
+                            <span th:text="${posicao.moto.placa}"></span>
+                            <small th:text="${posicao.identificacao}"></small>
+
+                            <a th:href="@{/posicoes/{id}/liberar(id=${posicao.id})}"
+                               class="btn btn-sm btn-outline-danger mt-2 position-relative" style="z-index: 1;">Liberar</a>
                         </div>
-                        <a th:if="${posicao.moto == null}" th:href="@{/posicoes/{id}/ocupar(id=${posicao.id})}" class="patio-cell vazio text-decoration-none text-dark">
+
+                        <div th:if="${posicao.moto == null}" class="patio-cell vazio position-relative">
+                            <a th:href="@{/posicoes/{id}/ocupar(id=${posicao.id})}" class="stretched-link"
+                               th:title="${'Ocupar posição ' + posicao.identificacao}"></a>
+
                             <span th:text="${posicao.identificacao}"></span>
                             <small>Vazio</small>
-                        </a>
+                        </div>
+
                     </th:block>
+
                     <div th:if="${posicao == null}" class="patio-cell"></div>
                 </div>
             </th:block>

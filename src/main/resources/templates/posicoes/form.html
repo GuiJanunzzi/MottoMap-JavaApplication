@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/_header :: header}"></head>
+<body>
+<nav th:replace="~{fragments/_header :: navbar}"></nav>
+<div class="container mt-4">
+    <h1 th:if="${posicaoPatio.id == null}">Cadastrar Posição</h1>
+    <h1 th:unless="${posicaoPatio.id == null}">Editar Posição</h1>
+    <hr>
+    <form th:action="@{/posicoes}" th:object="${posicaoPatio}" method="post">
+        <input type="hidden" th:field="*{id}" />
+
+        <div class="mb-3">
+            <label for="filial" class="form-label">Filial</label>
+            <select class="form-select" th:field="*{filial}" required>
+                <option th:each="f : ${filiais}" th:value="${f.id}" th:text="${f.nome}"></option>
+            </select>
+            <div class="text-danger" th:if="${#fields.hasErrors('filial')}" th:errors="*{filial}"></div>
+        </div>
+        <div class="row mb-3">
+            <div class="col">
+                <label for="identificacao" class="form-label">Identificação (Ex: A1, B12)</label>
+                <input type="text" class="form-control" th:field="*{identificacao}">
+                <div class="text-danger" th:if="${#fields.hasErrors('identificacao')}" th:errors="*{identificacao}"></div>
+            </div>
+            <div class="col">
+                <label for="area" class="form-label">Área</label>
+                <select class="form-select" th:field="*{area}" required>
+                    <option th:each="a : ${T(br.com.fiap.mottomap.model.Area).values()}" th:value="${a}" th:text="${a}"></option>
+                </select>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col">
+                <label for="numeroLinha" class="form-label">Número da Linha</label>
+                <input type="number" class="form-control" th:field="*{numeroLinha}">
+                <div class="text-danger" th:if="${#fields.hasErrors('numeroLinha')}" th:errors="*{numeroLinha}"></div>
+            </div>
+            <div class="col">
+                <label for="numeroColuna" class="form-label">Número da Coluna</label>
+                <input type="number" class="form-control" th:field="*{numeroColuna}">
+                <div class="text-danger" th:if="${#fields.hasErrors('numeroColuna')}" th:errors="*{numeroColuna}"></div>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Salvar</button>
+        <a th:href="@{/posicoes}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+<footer th:replace="~{fragments/_footer :: footer}"></footer>
+</body>
+</html>
