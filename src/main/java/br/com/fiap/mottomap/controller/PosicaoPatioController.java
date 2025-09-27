@@ -11,10 +11,14 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Controller
 @RequestMapping("/posicoes")
 public class PosicaoPatioController {
+
+    private static final Logger log = LoggerFactory.getLogger(PosicaoPatioController.class);
 
     private final PosicaoPatioService posicaoPatioService;
     private final PosicaoPatioRepository posicaoPatioRepository;
@@ -44,16 +48,30 @@ public class PosicaoPatioController {
     @PostMapping
     public String salvarPosicao(@Valid @ModelAttribute("posicaoPatio") PosicaoPatio posicaoPatio,
                                 BindingResult result,
-                                Model model, // Adicionar Model
+                                Model model,
                                 RedirectAttributes attrs) {
+
+        log.info("Recebendo requisição para salvar posição: {}", posicaoPatio);
+
         if (result.hasErrors()) {
-            // Adicionar a lista de filiais de volta ao modelo em caso de erro
+            log.error("ERRO DE VALIDAÇÃO ENCONTRADO: {}", result.getAllErrors());
             model.addAttribute("filiais", filialRepository.findAll());
             return "posicoes/form";
         }
-        posicaoPatioService.salvar(posicaoPatio);
-        attrs.addFlashAttribute("successMessage", "Posição salva com sucesso!");
-        return "redirect:/posicoes";
+
+        try {
+            log.info("Validação passou. Tentando salvar no serviço...");
+            posicaoPatioService.salvar(posicaoPatio);
+            log.info("Posição salva com sucesso!");
+            attrs.addFlashAttribute("successMessage", "Posição salva com sucesso!");
+            return "redirect:/posicoes";
+
+        } catch (Exception e) {
+            log.error("ERRO AO SALVAR NO SERVIÇO: ", e);
+            attrs.addFlashAttribute("errorMessage", "Erro ao salvar posição: " + e.getMessage());
+            model.addAttribute("filiais", filialRepository.findAll());
+            return "posicoes/form";
+        }
     }
 
     @GetMapping("/edit/{id}")

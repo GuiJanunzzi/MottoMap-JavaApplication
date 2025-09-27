@@ -34,7 +34,7 @@ public class PosicaoPatio {
     private Area area;
 
     @NotNull(message = "O campo 'ocupado' deve ser informado")
-    private Boolean ocupado;
+    private Boolean ocupado  = false;
 
     @NotNull(message = "campo obrigatório")
     @ManyToOne
