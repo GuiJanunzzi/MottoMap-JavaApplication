@@ -20,36 +20,45 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+// Representa um problema ou defeito reportado para uma moto específica.
 @Entity
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Problema {
+
+    // Chave primária da tabela
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // Categoria do problema (MECANICO, ELETRICO, etc.) para facilitar a triagem.
     @NotNull(message = "O tipo do problema é obrigatório")
     @Enumerated(EnumType.STRING)
     private TipoProblema tipoProblema;
 
+    // Detalhes sobre o problema reportado.
     @NotBlank(message = "A descrição é obrigatória")
     @Size(min = 10, max = 255, message = "A descrição deve ter entre 10 e 255 caracteres")
     private String descricao;
 
+    // Data em que o problema foi registrado no sistema.
     @NotNull(message = "A data é obrigatória")
     @PastOrPresent(message = "A data não pode ser no futuro")
-    @JsonFormat(pattern = "dd/MM/yyyy")
+    @JsonFormat(pattern = "dd/MM/yyyy") // Anotação do Jackson, útil para APIs REST, mas não tem efeito no Thymeleaf.
     private LocalDate dataRegistro;
 
+    // Indica se o problema já foi solucionado (true) ou se está pendente (false).
     @NotNull(message = "O status de resolução é obrigatório")
     private Boolean resolvido;
 
+    // Relacionamento Muitos-para-Um: Muitos problemas podem ser associados a uma moto.
     @NotNull(message = "A moto é obrigatória")
     @ManyToOne
     private Moto moto;
 
+    // Relacionamento Muitos-para-Um: Muitos problemas podem ser registrados por um mesmo usuário.
     @NotNull(message = "O usuário que reportou é obrigatório")
     @ManyToOne
     private Usuario usuario;
