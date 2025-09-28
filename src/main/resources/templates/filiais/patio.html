@@ -3,12 +3,38 @@
 
 <head th:replace="~{fragments/_header :: header}"></head>
 <style>
-    .patio-grid { display: grid; border: 2px solid #333; }
-    .patio-cell { border: 1px solid #ccc; padding: 10px; text-align: center; min-height: 100px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-    .ocupado { background-color: #f8d7da; font-weight: bold; }
-    .vazio { background-color: #d1e7dd; color: #555; }
-    .ocupado:hover { background-color: #f1c2c5; }
-    .vazio:hover { background-color: #b8d6c5; }
+    .patio-grid {
+        display: grid;
+        border: 2px solid #333;
+    }
+    .patio-cell {
+        border: 1px solid #ccc;
+        padding: 10px;
+        text-align: center;
+        min-height: 100px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between; /* Alinha o conteúdo */
+        align-items: center;
+        transition: transform 0.2s;
+    }
+    .patio-cell:hover {
+        transform: scale(1.05);
+        z-index: 10;
+    }
+
+    /* --- NOVAS CLASSES PARA AS ÁREAS --- */
+    .area-prontas { background-color: #d1e7dd; } /* Verde */
+    .area-minha-mottu { background-color: #cff4fc; } /* Azul Claro */
+    .area-problemas-simples { background-color: #fff3cd; } /* Amarelo */
+    .area-problemas-graves { background-color: #ffe0b3; } /* Laranja */
+    .area-irrecuperaveis { background-color: #f8d7da; } /* Vermelho */
+
+    /* Novo estilo para vagas ocupadas */
+    .ocupado-style {
+        font-weight: bold;
+        border: 2px solid #212529;
+    }
 </style>
 
 <body>
@@ -25,24 +51,34 @@
 
                     <th:block th:if="${posicao != null}">
 
-                        <div th:if="${posicao.moto != null}" class="patio-cell ocupado position-relative">
+                        <div th:if="${posicao.moto != null}"
+                             class="patio-cell position-relative ocupado-style"
+                             th:classappend="'area-' + ${#strings.replace(#strings.toLowerCase(posicao.area), '_', '-')}">
+
+                            <span class="badge bg-dark" th:text="${posicao.area}"></span>
                             <a th:href="@{/motos/{id}(id=${posicao.moto.id})}" class="stretched-link"
                                th:title="${'Ver detalhes da moto ' + posicao.moto.placa}"></a>
-
-                            <span th:text="${posicao.moto.placa}"></span>
-                            <small th:text="${posicao.identificacao}"></small>
-
+                            <div>
+                                <span class="fs-5" th:text="${posicao.moto.placa}"></span><br>
+                                <small th:text="${posicao.identificacao}"></small>
+                            </div>
                             <a th:href="@{/posicoes/{id}/liberar(id=${posicao.id})}"
-                               class="btn btn-sm btn-outline-danger mt-2 position-relative" style="z-index: 1;">Liberar</a>
+                               class="btn btn-sm btn-outline-danger position-relative" style="z-index: 1;">Liberar</a>
                         </div>
 
-                        <div th:if="${posicao.moto == null}" class="patio-cell vazio position-relative">
-                            <a th:href="@{/posicoes/{id}/ocupar(id=${posicao.id})}" class="stretched-link"
-                               th:title="${'Ocupar posição ' + posicao.identificacao}"></a>
+                        <a th:if="${posicao.moto == null}"
+                           th:href="@{/posicoes/{id}/ocupar(id=${posicao.id})}"
+                           class="patio-cell text-decoration-none text-dark"
+                           th:classappend="'area-' + ${#strings.replace(#strings.toLowerCase(posicao.area), '_', '-')}"
+                           th:title="${'Ocupar posição ' + posicao.identificacao}">
 
-                            <span th:text="${posicao.identificacao}"></span>
-                            <small>Vazio</small>
-                        </div>
+                            <span class="badge bg-dark" th:text="${posicao.area}"></span>
+                            <div>
+                                <span class="fs-5" th:text="${posicao.identificacao}"></span><br>
+                                <small>Vazio</small>
+                            </div>
+                            <span></span>
+                        </a>
 
                     </th:block>
 
