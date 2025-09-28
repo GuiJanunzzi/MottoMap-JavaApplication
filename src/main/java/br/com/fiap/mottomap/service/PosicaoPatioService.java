@@ -7,6 +7,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PosicaoPatioService {
@@ -57,5 +58,9 @@ public class PosicaoPatioService {
         posicao.setOcupado(false);
         posicao.setMoto(null); // Remove a associação com a moto
         posicaoPatioRepository.save(posicao);
+    }
+
+    public Optional<PosicaoPatio> buscarPorMotoId(Long motoId) {
+        return posicaoPatioRepository.findByMotoId(motoId);
     }
 }

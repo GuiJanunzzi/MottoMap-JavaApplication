@@ -4,6 +4,7 @@ import br.com.fiap.mottomap.model.Moto;
 import br.com.fiap.mottomap.model.Usuario;
 import br.com.fiap.mottomap.repository.FilialRepository;
 import br.com.fiap.mottomap.service.MotoService; // Importe o service
+import br.com.fiap.mottomap.service.PosicaoPatioService;
 import br.com.fiap.mottomap.service.ProblemaService;
 import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -23,11 +24,13 @@ public class MotoController {
     private final MotoService motoService;
     private final FilialRepository filialRepository;
     private final ProblemaService problemaService;
+    private final PosicaoPatioService posicaoPatioService;
 
-    public MotoController(MotoService motoService, FilialRepository filialRepository, ProblemaService problemaService) {
+    public MotoController(MotoService motoService, FilialRepository filialRepository, ProblemaService problemaService, PosicaoPatioService posicaoPatioService) {
         this.motoService = motoService;
         this.filialRepository = filialRepository;
         this.problemaService = problemaService;
+        this.posicaoPatioService = posicaoPatioService;
     }
 
     @GetMapping
@@ -70,13 +73,13 @@ public class MotoController {
 
     @GetMapping("/{id}")
     public String verDetalhesDaMoto(@PathVariable Long id, Model model) {
-        //Busca pelo ID
         model.addAttribute("moto", motoService.buscarPorId(id));
-
-        //Busca lista de problemas
         model.addAttribute("problemas", problemaService.buscarPorMotoId(id));
 
-        //Retorna a nova página de detalhes
+        posicaoPatioService.buscarPorMotoId(id).ifPresent(posicao -> {
+            model.addAttribute("posicaoPatio", posicao);
+        });
+
         return "motos/details";
     }
 

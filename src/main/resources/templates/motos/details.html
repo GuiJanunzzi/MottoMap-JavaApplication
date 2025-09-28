@@ -18,6 +18,11 @@
             <p><strong>Ano:</strong> <span th:text="${moto.ano}"></span></p>
             <p><strong>Status:</strong> <span th:text="${moto.statusMoto}"></span></p>
             <p><strong>Filial:</strong> <span th:text="${moto.filial.nome}"></span></p>
+
+            <p><strong>Posição no Pátio:</strong>
+                <span th:if="${posicaoPatio}" th:text="${posicaoPatio.identificacao}" class="badge bg-info"></span>
+                <span th:unless="${posicaoPatio}" class="badge bg-secondary">Não alocada</span>
+            </p>
         </div>
     </div>
 
@@ -37,27 +42,28 @@
             <th>Data</th>
             <th>Reportado por</th>
             <th>Resolvido?</th>
-            <th>Ações</th> </tr>
+            <th>Ações</th>
+        </tr>
         </thead>
         <tbody>
-        <tr th:each="problema : ${problemas}">
-            <td th:text="${problema.id}"></td>
-            <td th:text="${problema.tipoProblema}"></td>
-            <td th:text="${problema.descricao}"></td>
-            <td th:text="${#temporals.format(problema.dataRegistro, 'dd/MM/yyyy')}"></td>
-            <td th:text="${problema.usuario.nome}"></td>
+        <tr th:each="preoblema : ${problemas}">
+            <td th:text="${preoblema.id}"></td>
+            <td th:text="${preoblema.tipoProblema}"></td>
+            <td th:text="${preoblema.descricao}"></td>
+            <td th:text="${#temporals.format(preoblema.dataRegistro, 'dd/MM/yyyy')}"></td>
+            <td th:text="${preoblema.usuario.nome}"></td>
             <td>
-                <span th:if="${problema.resolvido}" class="badge bg-success">Sim</span>
-                <span th:unless="${problema.resolvido}" class="badge bg-danger">Não</span>
+                <span th:if="${preoblema.resolvido}" class="badge bg-success">Sim</span>
+                <span th:unless="${preoblema.resolvido}" class="badge bg-danger">Não</span>
             </td>
             <td>
-                <a th:if="${!problema.resolvido}"
-                   th:href="@{/problemas/resolver/{id}(id=${problema.id})}"
+                <a th:if="${!preoblema.resolvido}"
+                   th:href="@{/problemas/resolver/{id}(id=${preoblema.id})}"
                    sec:authorize="hasAuthority('COL_MECANICO')"
                    class="btn btn-sm btn-success">Resolver</a>
 
-                <a th:href="@{/problemas/delete/{id}(id=${problema.id})}"
-                   sec:authorize="hasAuthority('ADM_LOCAL')"
+                <a th:href="@{/problemas/delete/{id}(id=${preoblema.id})}"
+                   sec:authorize="hasAuthority('ADM_GERAL')"
                    class="btn btn-sm btn-danger"
                    onclick="return confirm('Tem certeza que deseja excluir este registro de problema?')">Excluir</a>
             </td>
