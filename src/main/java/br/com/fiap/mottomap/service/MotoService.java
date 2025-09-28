@@ -39,4 +39,8 @@ public class MotoService {
     public List<Moto> buscarMotosSemPosicao(Long filialId) {
         return motoRepository.findMotosSemPosicaoNaFilial(filialId);
     }
+
+    public List<Moto> buscarMotosComProblemasNaoResolvidos(Long filialId) {
+        return motoRepository.findMotosComProblemasNaoResolvidosNaFilial(filialId);
+    }
 }

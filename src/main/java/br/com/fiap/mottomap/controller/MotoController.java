@@ -1,15 +1,20 @@
 package br.com.fiap.mottomap.controller;
 
 import br.com.fiap.mottomap.model.Moto;
+import br.com.fiap.mottomap.model.Usuario;
 import br.com.fiap.mottomap.repository.FilialRepository;
 import br.com.fiap.mottomap.service.MotoService; // Importe o service
 import br.com.fiap.mottomap.service.ProblemaService;
 import jakarta.validation.Valid;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.List;
 
 @Controller
 @RequestMapping("/motos")
@@ -73,5 +78,19 @@ public class MotoController {
 
         //Retorna a nova página de detalhes
         return "motos/details";
+    }
+
+    @GetMapping("/pendentes")
+    @PreAuthorize("hasAuthority('COL_MECANICO')")
+    public String listarMotosPendentes(Model model, @AuthenticationPrincipal Usuario usuarioLogado) {
+        if (usuarioLogado.getFilial() == null) {
+            return "redirect:/?error=no_filial";
+        }
+
+        Long filialId = usuarioLogado.getFilial().getId();
+        List<Moto> motosPendentes = motoService.buscarMotosComProblemasNaoResolvidos(filialId);
+
+        model.addAttribute("motos", motosPendentes);
+        return "motos/pendentes";
     }
 }
