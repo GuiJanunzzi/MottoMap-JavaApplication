@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/_header :: header}"></head>
+<body>
+<nav th:replace="~{fragments/_header :: navbar}"></nav>
+<div class="container mt-4">
+    <h1>Motos Sem Posição no Pátio</h1>
+    <p>As motos abaixo precisam ser alocadas em uma vaga no pátio da sua filial.</p>
+    <hr>
+
+    <div class="d-flex justify-content-end mb-3">
+        <a th:href="@{/filiais/{id}/patio(id=${filialId})}" class="btn btn-info">
+            Ir para o Mapa do Pátio
+        </a>
+    </div>
+
+    <div th:if="${motos.isEmpty()}" class="alert alert-success">
+        Ótimo trabalho! Todas as motos da sua filial estão alocadas.
+    </div>
+
+    <table class="table table-striped" th:unless="${motos.isEmpty()}">
+        <thead>
+        <tr>
+            <th>Placa</th>
+            <th>Modelo</th>
+            <th>Ano</th>
+            <th>Ações</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="moto : ${motos}">
+            <td th:text="${moto.placa}"></td>
+            <td th:text="${moto.modeloMoto}"></td>
+            <td th:text="${moto.ano}"></td>
+            <td>
+                <a th:href="@{/motos/{id}(id=${moto.id})}" class="btn btn-sm btn-secondary">Ver Detalhes</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<footer th:replace="~{fragments/_footer :: footer}"></footer>
+</body>
+</html>

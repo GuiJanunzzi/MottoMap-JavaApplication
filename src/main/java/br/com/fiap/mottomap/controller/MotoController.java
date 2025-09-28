@@ -93,4 +93,19 @@ public class MotoController {
         model.addAttribute("motos", motosPendentes);
         return "motos/pendentes";
     }
+
+    @GetMapping("/sem-posicao")
+    @PreAuthorize("hasAnyAuthority('COL_PATIO', 'ADM_GERAL', 'ADM_LOCAL')") // Permissão para pátio e admins
+    public String listarMotosSemPosicao(Model model, @AuthenticationPrincipal Usuario usuarioLogado) {
+        if (usuarioLogado.getFilial() == null) {
+            return "redirect:/?error=no_filial";
+        }
+
+        Long filialId = usuarioLogado.getFilial().getId();
+        List<Moto> motosSemPosicao = motoService.buscarMotosSemPosicao(filialId);
+
+        model.addAttribute("motos", motosSemPosicao);
+        model.addAttribute("filialId", filialId);
+        return "motos/sem-posicao";
+    }
 }

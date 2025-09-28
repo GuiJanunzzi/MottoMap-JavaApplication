@@ -23,6 +23,9 @@
                 <li class="nav-item" sec:authorize="hasAuthority('COL_MECANICO')">
                     <a class="nav-link" th:href="@{/motos/pendentes}">Motos Pendentes</a>
                 </li>
+                <li class="nav-item" sec:authorize="hasAuthority('COL_PATIO')">
+                    <a class="nav-link" th:href="@{/motos/sem-posicao}">Alocar Motos</a>
+                </li>
                 <li class="nav-item" sec:authorize="hasAnyAuthority('COL_PATIO', 'COL_MECANICO', 'ADM_LOCAL')">
                     <a class="nav-link" th:href="@{/posicoes/meu-patio}">Meu Pátio</a>
                 </li>
