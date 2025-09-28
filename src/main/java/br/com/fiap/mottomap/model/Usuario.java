@@ -43,6 +43,8 @@ public class Usuario implements UserDetails {
     @Enumerated(EnumType.STRING)
     private CargoUsuario cargoUsuario;
 
+    private boolean ativo = true;
+
     @NotNull(message = "campo obrigatório")
     @ManyToOne
     private Filial filial;
@@ -53,25 +55,20 @@ public class Usuario implements UserDetails {
         return List.of(new SimpleGrantedAuthority(cargoUsuario.name()));
     }
 
-    // O Spring Security usa este método internamente, já está correto.
+    // O Spring Security usa este metodo internamente, já está correto.
     @Override
     public String getPassword() {
         return this.password;
     }
 
-    // O Spring Security usa este método para identificar o usuário.
+    // O Spring Security usa este metodo para identificar o usuário.
     @Override
     public String getUsername() {
         return this.username;
     }
 
-    // Para o projeto, podemos deixar todos como 'true'
     @Override
-    public boolean isAccountNonExpired() { return true; }
-    @Override
-    public boolean isAccountNonLocked() { return true; }
-    @Override
-    public boolean isCredentialsNonExpired() { return true; }
-    @Override
-    public boolean isEnabled() { return true; }
+    public boolean isEnabled(){
+        return this.ativo;
+    }
 }

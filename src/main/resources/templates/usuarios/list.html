@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/_header :: header}"></head>
+<body>
+<nav th:replace="~{fragments/_header :: navbar}"></nav>
+<div class="container mt-4">
+    <h1>Gerenciamento de Usuários</h1>
+    <hr>
+    <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+    <a th:href="@{/usuarios/new}" class="btn btn-primary mb-3">Cadastrar Novo Usuário</a>
+    <table class="table table-striped">
+        <thead>
+        <tr><th>Nome</th><th>Email (Username)</th><th>Cargo</th><th>Filial</th><th>Status</th><th>Ações</th></tr>
+        </thead>
+        <tbody>
+        <tr th:each="user : ${usuarios}">
+            <td th:text="${user.nome}"></td>
+            <td th:text="${user.username}"></td>
+            <td th:text="${user.cargoUsuario}"></td>
+            <td th:text="${user.filial?.nome}"></td>
+            <td>
+                <span th:if="${user.ativo}" class="badge bg-success">Ativo</span>
+                <span th:unless="${user.ativo}" class="badge bg-danger">Inativo</span>
+            </td>
+            <td>
+                <a th:href="@{/usuarios/edit/{id}(id=${user.id})}" class="btn btn-sm btn-warning">Editar</a>
+
+                <a th:if="${user.ativo}" th:href="@{/usuarios/deactivate/{id}(id=${user.id})}" class="btn btn-sm btn-danger" onclick="return confirm('Tem certeza que deseja desativar o usuário?')">Desativar</a>
+
+                <a th:unless="${user.ativo}" th:href="@{/usuarios/activate/{id}(id=${user.id})}" class="btn btn-sm btn-success">Ativar</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<footer th:replace="~{fragments/_footer :: footer}"></footer>
+</body>
+</html>

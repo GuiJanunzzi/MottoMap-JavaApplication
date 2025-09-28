@@ -18,6 +18,7 @@ CREATE TABLE usuario
     username VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
     cargo_usuario VARCHAR(50) NOT NULL,
+    ativo BOOLEAN NOT NULL DEFAULT true,
     filial_id BIGINT,
     CONSTRAINT usuario_pkey PRIMARY KEY (id), -- Adicionado
     FOREIGN KEY (filial_id) REFERENCES filial(id)
