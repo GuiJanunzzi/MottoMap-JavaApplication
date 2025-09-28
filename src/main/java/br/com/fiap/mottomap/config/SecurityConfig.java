@@ -21,9 +21,13 @@ public class SecurityConfig {
                         // Libera o acesso à página de login
                         .requestMatchers("/login").permitAll()
                         // Define regras de autorização para URLs específicas
+                        .requestMatchers("/posicoes/meu-patio").hasAnyAuthority("COL_PATIO", "COL_MECANICO")
+                        .requestMatchers("/filiais/{id}/patio").authenticated()
                         .requestMatchers("/filiais/**", "/usuarios/**").hasAuthority("ADM_GERAL")
                         .requestMatchers("/motos/delete/**").hasAuthority("ADM_GERAL")
                         .requestMatchers("/motos/new", "/motos/edit/**").hasAnyAuthority("ADM_GERAL", "ADM_LOCAL")
+                        .requestMatchers("/posicoes/**").hasAnyAuthority("ADM_GERAL", "ADM_LOCAL")
+                        .requestMatchers("/filiais/{id}/patio", "/posicoes/**").authenticated()
                         // Exige autenticação para qualquer outra requisição
                         .anyRequest().authenticated()
                 )

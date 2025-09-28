@@ -1,11 +1,13 @@
 package br.com.fiap.mottomap.controller;
 
 import br.com.fiap.mottomap.model.PosicaoPatio;
+import br.com.fiap.mottomap.model.Usuario;
 import br.com.fiap.mottomap.repository.FilialRepository;
 import br.com.fiap.mottomap.repository.PosicaoPatioRepository;
 import br.com.fiap.mottomap.service.MotoService;
 import br.com.fiap.mottomap.service.PosicaoPatioService;
 import jakarta.validation.Valid;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -39,9 +41,18 @@ public class PosicaoPatioController {
     }
 
     @GetMapping("/new")
-    public String mostrarFormularioCadastro(Model model) {
-        model.addAttribute("posicaoPatio", new PosicaoPatio());
-        model.addAttribute("filiais", filialRepository.findAll());
+    public String mostrarFormularioCadastro(Model model, @AuthenticationPrincipal Usuario usuarioLogado) {
+        var posicao = new PosicaoPatio();
+
+        // Se o usuário for ADM_LOCAL, já pré-definimos a filial dele
+        if (usuarioLogado.getCargoUsuario().name().equals("ADM_LOCAL")) {
+            posicao.setFilial(usuarioLogado.getFilial());
+        } else {
+            // Se for ADM_GERAL, enviamos a lista de todas as filiais para ele escolher
+            model.addAttribute("filiais", filialRepository.findAll());
+        }
+
+        model.addAttribute("posicaoPatio", posicao);
         return "posicoes/form";
     }
 
@@ -49,29 +60,27 @@ public class PosicaoPatioController {
     public String salvarPosicao(@Valid @ModelAttribute("posicaoPatio") PosicaoPatio posicaoPatio,
                                 BindingResult result,
                                 Model model,
-                                RedirectAttributes attrs) {
+                                RedirectAttributes attrs,
+                                @AuthenticationPrincipal Usuario usuarioLogado) {
 
-        log.info("Recebendo requisição para salvar posição: {}", posicaoPatio);
+        // Validação extra de segurança: ADM_LOCAL só pode cadastrar na própria filial
+        if (usuarioLogado.getCargoUsuario().name().equals("ADM_LOCAL")) {
+            if (posicaoPatio.getFilial().getId() != usuarioLogado.getFilial().getId()) {
+                throw new SecurityException("Acesso negado: tentativa de cadastro em filial não permitida.");
+            }
+        }
 
         if (result.hasErrors()) {
-            log.error("ERRO DE VALIDAÇÃO ENCONTRADO: {}", result.getAllErrors());
-            model.addAttribute("filiais", filialRepository.findAll());
+            // Se der erro e for ADM_GERAL, recarregar a lista de filiais
+            if (usuarioLogado.getCargoUsuario().name().equals("ADM_GERAL")) {
+                model.addAttribute("filiais", filialRepository.findAll());
+            }
             return "posicoes/form";
         }
 
-        try {
-            log.info("Validação passou. Tentando salvar no serviço...");
-            posicaoPatioService.salvar(posicaoPatio);
-            log.info("Posição salva com sucesso!");
-            attrs.addFlashAttribute("successMessage", "Posição salva com sucesso!");
-            return "redirect:/posicoes";
-
-        } catch (Exception e) {
-            log.error("ERRO AO SALVAR NO SERVIÇO: ", e);
-            attrs.addFlashAttribute("errorMessage", "Erro ao salvar posição: " + e.getMessage());
-            model.addAttribute("filiais", filialRepository.findAll());
-            return "posicoes/form";
-        }
+        posicaoPatioService.salvar(posicaoPatio);
+        attrs.addFlashAttribute("successMessage", "Posição salva com sucesso!");
+        return "redirect:/posicoes";
     }
 
     @GetMapping("/edit/{id}")
@@ -115,4 +124,15 @@ public class PosicaoPatioController {
         attrs.addFlashAttribute("successMessage", "Posição liberada com sucesso!");
         return "redirect:/filiais/" + filialId + "/patio";
     }
+
+    @GetMapping("/meu-patio")
+    public String verMeuPatio(@AuthenticationPrincipal Usuario usuarioLogado, RedirectAttributes attrs) {
+        if (usuarioLogado.getFilial() == null) {
+            attrs.addFlashAttribute("errorMessage", "Você não está associado a nenhuma filial.");
+            return "redirect:/";
+        }
+        Long filialId = usuarioLogado.getFilial().getId();
+        return "redirect:/filiais/" + filialId + "/patio";
+    }
+
 }

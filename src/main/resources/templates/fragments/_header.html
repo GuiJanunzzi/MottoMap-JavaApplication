@@ -20,7 +20,10 @@
                 <li class="nav-item">
                     <a class="nav-link" th:href="@{/motos}">Motos</a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item" sec:authorize="hasAnyAuthority('COL_PATIO', 'COL_MECANICO')">
+                    <a class="nav-link" th:href="@{/posicoes/meu-patio}">Meu Pátio</a>
+                </li>
+                <li class="nav-item" sec:authorize="hasAnyAuthority('ADM_GERAL', 'ADM_LOCAL')">
                     <a class="nav-link" th:href="@{/posicoes}">Posições do Pátio</a>
                 </li>
                 <li class="nav-item" sec:authorize="hasAuthority('ADM_GERAL')">

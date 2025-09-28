@@ -12,9 +12,17 @@
 
         <div class="mb-3">
             <label for="filial" class="form-label">Filial</label>
-            <select class="form-select" th:field="*{filial}" required>
-                <option th:each="f : ${filiais}" th:value="${f.id}" th:text="${f.nome}"></option>
-            </select>
+
+            <div th:if="${filiais != null}">
+                <select class="form-select" th:field="*{filial}" required>
+                    <option th:each="f : ${filiais}" th:value="${f.id}" th:text="${f.nome}"></option>
+                </select>
+            </div>
+
+            <div th:if="${filiais == null}">
+                <input type="text" class="form-control" th:value="${posicaoPatio.filial.nome}" readonly />
+                <input type="hidden" th:field="*{filial}" />
+            </div>
             <div class="text-danger" th:if="${#fields.hasErrors('filial')}" th:errors="*{filial}"></div>
         </div>
         <div class="row mb-3">
