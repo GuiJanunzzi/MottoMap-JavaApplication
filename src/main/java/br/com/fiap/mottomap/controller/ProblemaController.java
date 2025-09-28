@@ -2,7 +2,7 @@ package br.com.fiap.mottomap.controller;
 
 import br.com.fiap.mottomap.model.Problema;
 import br.com.fiap.mottomap.service.MotoService;
-import br.com.fiap.mottomap.service.ProblemaService; // IMPORTAR O SERVICE
+import br.com.fiap.mottomap.service.ProblemaService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -61,6 +61,6 @@ public class ProblemaController {
         problemaService.deletar(id);
 
         redirectAttributes.addFlashAttribute("successMessage", "Problema excluído com sucesso!");
-        return "redirect:/motos/" + motoId; // Redireciona de volta
+        return "redirect:/motos/" + motoId;
     }
 }

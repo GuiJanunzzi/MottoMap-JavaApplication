@@ -2,19 +2,18 @@ package br.com.fiap.mottomap.controller;
 
 import br.com.fiap.mottomap.model.PosicaoPatio;
 import br.com.fiap.mottomap.model.Usuario;
-import br.com.fiap.mottomap.repository.FilialRepository;
-import br.com.fiap.mottomap.repository.PosicaoPatioRepository;
+import br.com.fiap.mottomap.service.FilialService;
 import br.com.fiap.mottomap.service.MotoService;
 import br.com.fiap.mottomap.service.PosicaoPatioService;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Controller
 @RequestMapping("/posicoes")
@@ -23,15 +22,13 @@ public class PosicaoPatioController {
     private static final Logger log = LoggerFactory.getLogger(PosicaoPatioController.class);
 
     private final PosicaoPatioService posicaoPatioService;
-    private final PosicaoPatioRepository posicaoPatioRepository;
     private final MotoService motoService;
-    private final FilialRepository filialRepository;
+    private final FilialService filialService;
 
-    public PosicaoPatioController(PosicaoPatioService posService, PosicaoPatioRepository posRepo, MotoService motoSvc, FilialRepository filialRepository) {
+    public PosicaoPatioController(PosicaoPatioService posService, MotoService motoSvc, FilialService filialService) {
         this.posicaoPatioService = posService;
-        this.posicaoPatioRepository = posRepo;
         this.motoService = motoSvc;
-        this.filialRepository = filialRepository;
+        this.filialService = filialService;
     }
 
     @GetMapping
@@ -43,15 +40,11 @@ public class PosicaoPatioController {
     @GetMapping("/new")
     public String mostrarFormularioCadastro(Model model, @AuthenticationPrincipal Usuario usuarioLogado) {
         var posicao = new PosicaoPatio();
-
-        // Se o usuário for ADM_LOCAL, já pré-definimos a filial dele
         if (usuarioLogado.getCargoUsuario().name().equals("ADM_LOCAL")) {
             posicao.setFilial(usuarioLogado.getFilial());
         } else {
-            // Se for ADM_GERAL, enviamos a lista de todas as filiais para ele escolher
-            model.addAttribute("filiais", filialRepository.findAll());
+            model.addAttribute("filiais", filialService.buscarTodas());
         }
-
         model.addAttribute("posicaoPatio", posicao);
         return "posicoes/form";
     }
@@ -62,22 +55,17 @@ public class PosicaoPatioController {
                                 Model model,
                                 RedirectAttributes attrs,
                                 @AuthenticationPrincipal Usuario usuarioLogado) {
-
-        // Validação extra de segurança: ADM_LOCAL só pode cadastrar na própria filial
         if (usuarioLogado.getCargoUsuario().name().equals("ADM_LOCAL")) {
             if (posicaoPatio.getFilial().getId() != usuarioLogado.getFilial().getId()) {
                 throw new SecurityException("Acesso negado: tentativa de cadastro em filial não permitida.");
             }
         }
-
         if (result.hasErrors()) {
-            // Se der erro e for ADM_GERAL, recarregar a lista de filiais
             if (usuarioLogado.getCargoUsuario().name().equals("ADM_GERAL")) {
-                model.addAttribute("filiais", filialRepository.findAll());
+                model.addAttribute("filiais", filialService.buscarTodas());
             }
             return "posicoes/form";
         }
-
         posicaoPatioService.salvar(posicaoPatio);
         attrs.addFlashAttribute("successMessage", "Posição salva com sucesso!");
         return "redirect:/posicoes";
@@ -86,7 +74,7 @@ public class PosicaoPatioController {
     @GetMapping("/edit/{id}")
     public String mostrarFormularioEdicao(@PathVariable Long id, Model model) {
         model.addAttribute("posicaoPatio", posicaoPatioService.buscarPorId(id));
-        model.addAttribute("filiais", filialRepository.findAll());
+        model.addAttribute("filiais", filialService.buscarTodas());
         return "posicoes/form";
     }
 
@@ -103,7 +91,7 @@ public class PosicaoPatioController {
 
     @GetMapping("/{id}/ocupar")
     public String mostrarFormularioOcupar(@PathVariable Long id, Model model) {
-        var posicao = posicaoPatioRepository.findById(id).orElseThrow();
+        var posicao = posicaoPatioService.buscarPorId(id);
         model.addAttribute("posicao", posicao);
         model.addAttribute("motosDisponiveis", motoService.buscarMotosSemPosicao(posicao.getFilial().getId()));
         return "posicoes/ocupar-form";
@@ -112,14 +100,14 @@ public class PosicaoPatioController {
     @PostMapping("/ocupar")
     public String ocuparPosicao(@RequestParam Long posicaoId, @RequestParam Long motoId, RedirectAttributes attrs) {
         posicaoPatioService.ocuparPosicao(posicaoId, motoId);
-        var filialId = posicaoPatioRepository.findById(posicaoId).get().getFilial().getId();
+        var filialId = posicaoPatioService.buscarPorId(posicaoId).getFilial().getId();
         attrs.addFlashAttribute("successMessage", "Moto alocada com sucesso!");
         return "redirect:/filiais/" + filialId + "/patio";
     }
 
     @GetMapping("/{id}/liberar")
     public String liberarPosicao(@PathVariable Long id, RedirectAttributes attrs) {
-        var filialId = posicaoPatioRepository.findById(id).get().getFilial().getId();
+        var filialId = posicaoPatioService.buscarPorId(id).getFilial().getId();
         posicaoPatioService.liberarPosicao(id);
         attrs.addFlashAttribute("successMessage", "Posição liberada com sucesso!");
         return "redirect:/filiais/" + filialId + "/patio";
@@ -134,5 +122,4 @@ public class PosicaoPatioController {
         Long filialId = usuarioLogado.getFilial().getId();
         return "redirect:/filiais/" + filialId + "/patio";
     }
-
 }

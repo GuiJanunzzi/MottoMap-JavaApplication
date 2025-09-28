@@ -1,8 +1,8 @@
 package br.com.fiap.mottomap.controller;
 
-import br.com.fiap.mottomap.dto.UsuarioDTO; // Importar DTO
+import br.com.fiap.mottomap.dto.UsuarioDTO;
 import br.com.fiap.mottomap.model.Usuario;
-import br.com.fiap.mottomap.repository.FilialRepository;
+import br.com.fiap.mottomap.service.FilialService;
 import br.com.fiap.mottomap.service.UsuarioService;
 import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -18,11 +18,11 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class UsuarioController {
 
     private final UsuarioService usuarioService;
-    private final FilialRepository filialRepository;
+    private final FilialService filialService;
 
-    public UsuarioController(UsuarioService usuarioService, FilialRepository filialRepository) {
+    public UsuarioController(UsuarioService usuarioService, FilialService filialService) {
         this.usuarioService = usuarioService;
-        this.filialRepository = filialRepository;
+        this.filialService = filialService;
     }
 
     @GetMapping
@@ -33,15 +33,15 @@ public class UsuarioController {
 
     @GetMapping("/new")
     public String mostrarFormularioCadastro(Model model) {
-        model.addAttribute("usuarioDTO", new UsuarioDTO()); // Usa o DTO
-        model.addAttribute("filiais", filialRepository.findAll());
+        model.addAttribute("usuarioDTO", new UsuarioDTO());
+        model.addAttribute("filiais", filialService.buscarTodas());
         return "usuarios/form";
     }
 
     @PostMapping
     public String salvarUsuario(@Valid @ModelAttribute("usuarioDTO") UsuarioDTO usuarioDTO, BindingResult result, Model model, RedirectAttributes attrs) {
         if (result.hasErrors()) {
-            model.addAttribute("filiais", filialRepository.findAll());
+            model.addAttribute("filiais", filialService.buscarTodas());
             return "usuarios/form";
         }
         usuarioService.salvar(usuarioDTO);
@@ -51,7 +51,6 @@ public class UsuarioController {
 
     @GetMapping("/edit/{id}")
     public String mostrarFormularioEdicao(@PathVariable Long id, Model model) {
-        // Busca a entidade e converte para DTO antes de enviar para a tela
         Usuario usuario = usuarioService.buscarPorId(id);
         UsuarioDTO dto = new UsuarioDTO();
         dto.setId(usuario.getId());
@@ -62,7 +61,7 @@ public class UsuarioController {
         dto.setAtivo(usuario.isAtivo());
 
         model.addAttribute("usuarioDTO", dto);
-        model.addAttribute("filiais", filialRepository.findAll());
+        model.addAttribute("filiais", filialService.buscarTodas());
         return "usuarios/form";
     }
 
