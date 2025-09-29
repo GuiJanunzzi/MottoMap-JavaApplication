@@ -19,8 +19,12 @@ public interface MotoRepository extends JpaRepository<Moto, Long>{
     @Query("SELECT DISTINCT p.moto FROM Problema p WHERE p.resolvido = false AND p.moto.filial.id = :filialId")
     List<Moto> findMotosComProblemasNaoResolvidosNaFilial(Long filialId);
 
+    // Busca uma moto pela placa (que deve ser única). Retorna um Optional
     Optional<Moto> findByPlaca(String placa);
 
+    // Busca uma moto pelo chassi (que deve ser único). Retorna um Optional
     Optional<Moto> findByChassi(String chassi);
 
+    // Busca todas as motos associados a uma filial específica pelo ID da filial
+    List<Moto> findByFilialId(Long filialId);
 }

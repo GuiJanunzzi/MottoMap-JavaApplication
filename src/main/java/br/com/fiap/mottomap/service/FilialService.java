@@ -2,6 +2,8 @@ package br.com.fiap.mottomap.service;
 
 import br.com.fiap.mottomap.model.Filial;
 import br.com.fiap.mottomap.repository.FilialRepository;
+import br.com.fiap.mottomap.repository.MotoRepository;
+import br.com.fiap.mottomap.repository.PosicaoPatioRepository;
 import br.com.fiap.mottomap.repository.UsuarioRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
@@ -14,11 +16,15 @@ public class FilialService {
 
     private final FilialRepository filialRepository;
     private final UsuarioRepository usuarioRepository;
+    private final MotoRepository motoRepository;
+    private final PosicaoPatioRepository posicaoPatioRepository;
 
     // Injeção de dependências via construtor
-    public FilialService(FilialRepository filialRepository, UsuarioRepository usuarioRepository) {
+    public FilialService(FilialRepository filialRepository, UsuarioRepository usuarioRepository, MotoRepository motoRepository, PosicaoPatioRepository posicaoPatioRepository) {
         this.filialRepository = filialRepository;
         this.usuarioRepository = usuarioRepository;
+        this.motoRepository = motoRepository;
+        this.posicaoPatioRepository = posicaoPatioRepository;
     }
 
     // Retorna uma lista com todas as filiais cadastradas.
@@ -42,10 +48,22 @@ public class FilialService {
         // Garante que a filial existe antes de tentar deletar.
         Filial filialParaDeletar = buscarPorId(id);
 
-        // Regra de negócio: não permite excluir uma filial se ela tiver usuários vinculados.
+        // Não permite excluir uma filial se ela tiver usuários vinculados.
         if (!usuarioRepository.findByFilialId(id).isEmpty()){
             // Se a verificação encontrar usuários, lança um erro com uma mensagem clara.
             throw new RuntimeException("Não é possível excluir a filial, pois existem usuários associados a ela.");
+        }
+
+        // Não permite excluir uma filial se ela tiver motos vinculadas.
+        if (!motoRepository.findByFilialId(id).isEmpty()) {
+            // Se a verificação encontrar motos, lança um erro com uma mensagem clara.
+            throw new IllegalStateException("Não é possível excluir a filial, pois existem motos cadastradas nela.");
+        }
+
+        // Não permite excluir uma filial se ela tiver motos vinculadas.
+        if (!posicaoPatioRepository.findByFilialId(id).isEmpty()) {
+            // Se a verificação encontrar posições, lança um erro com uma mensagem clara.
+            throw new IllegalStateException("Não é possível excluir a filial, pois existem posições de pátio cadastradas nela.");
         }
 
         // Se a verificação passar, deleta a filial.

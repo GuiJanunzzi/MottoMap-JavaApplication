@@ -15,4 +15,7 @@ public interface PosicaoPatioRepository extends JpaRepository<PosicaoPatio, Long
     // Busca a posição do pátio que está sendo ocupada por uma moto específica (pelo ID da moto).
     // Retorna um Optional, pois a moto pode não estar em nenhuma posição.
     Optional<PosicaoPatio> findByMotoId(Long motoId);
+
+    // Busca todas as posições associados a uma filial específica pelo ID da filial.
+    List<PosicaoPatio> findByFilialId(Long filialId);
 }
