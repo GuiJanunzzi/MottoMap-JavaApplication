@@ -2,6 +2,8 @@ package br.com.fiap.mottomap.service;
 
 import br.com.fiap.mottomap.model.Moto;
 import br.com.fiap.mottomap.repository.MotoRepository;
+import br.com.fiap.mottomap.repository.PosicaoPatioRepository;
+import br.com.fiap.mottomap.repository.ProblemaRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -12,10 +14,14 @@ import java.util.List;
 public class MotoService {
 
     private final MotoRepository motoRepository;
+    private final ProblemaRepository problemaRepository;     // ADICIONAR
+    private final PosicaoPatioRepository posicaoPatioRepository;
 
     // Injeção de dependência do repositório de motos via construtor.
-    public MotoService(MotoRepository motoRepository) {
+    public MotoService(MotoRepository motoRepository, ProblemaRepository problemaRepository, PosicaoPatioRepository posicaoPatioRepository) {
         this.motoRepository = motoRepository;
+        this.problemaRepository = problemaRepository;
+        this.posicaoPatioRepository = posicaoPatioRepository;
     }
 
     // Retorna uma lista com todas as motos cadastradas.
@@ -37,8 +43,22 @@ public class MotoService {
 
     // Deleta uma moto do banco de dados a partir do seu ID.
     public void deletarPorId(Long id) {
-        // Usa o metodo buscarPorId para garantir que a moto existe antes de deletar.
+        // Garante que a moto realmente existe no banco.
         Moto motoParaDeletar = buscarPorId(id);
+
+        // Verifica se a moto está alocada em uma posição no pátio.
+        if (posicaoPatioRepository.findByMotoId(id).isPresent()) {
+            // Se estiver, a exclusão é bloqueada para não deixar a vaga inconsistente.
+            throw new IllegalStateException("Não é possível excluir a moto, pois ela está alocada em uma posição no pátio.");
+        }
+
+        // Verifica se a moto possui um histórico de problemas registrados.
+        if (!problemaRepository.findByMotoId(id).isEmpty()) {
+            // Se possuir, a exclusão também é bloqueada para não perder o histórico de manutenções.
+            throw new IllegalStateException("Não é possível excluir a moto, pois ela possui registros de problemas associados.");
+        }
+
+        // Se todas as verificações passarem, a moto pode ser deletada com segurança.
         motoRepository.delete(motoParaDeletar);
     }
 

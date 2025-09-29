@@ -72,8 +72,13 @@ public class MotoController {
     // Deleta uma moto
     @GetMapping("/delete/{id}")
     public String deletarMoto(@PathVariable Long id, RedirectAttributes redirectAttributes) {
-        motoService.deletarPorId(id);
-        redirectAttributes.addFlashAttribute("successMessage", "Moto deletada com sucesso!");
+        try {
+            motoService.deletarPorId(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Moto deletada com sucesso!");
+        } catch (Exception e) {
+            // Captura a exceção do serviço e exibe a mensagem de erro na tela
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        }
         return "redirect:/motos";
     }
 
