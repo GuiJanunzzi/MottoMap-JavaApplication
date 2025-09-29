@@ -44,22 +44,19 @@ public class Problema {
     private String descricao;
 
     // Data em que o problema foi registrado no sistema.
-    @NotNull(message = "A data é obrigatória")
     @PastOrPresent(message = "A data não pode ser no futuro")
     @JsonFormat(pattern = "dd/MM/yyyy") // Anotação do Jackson, útil para APIs REST, mas não tem efeito no Thymeleaf.
     private LocalDate dataRegistro;
 
     // Indica se o problema já foi solucionado (true) ou se está pendente (false).
     @NotNull(message = "O status de resolução é obrigatório")
-    private Boolean resolvido;
+    private Boolean resolvido = false;
 
     // Relacionamento Muitos-para-Um: Muitos problemas podem ser associados a uma moto.
-    @NotNull(message = "A moto é obrigatória")
     @ManyToOne
     private Moto moto;
 
     // Relacionamento Muitos-para-Um: Muitos problemas podem ser registrados por um mesmo usuário.
-    @NotNull(message = "O usuário que reportou é obrigatório")
     @ManyToOne
     private Usuario usuario;
 }

@@ -25,7 +25,8 @@
 
         <div class="mb-3">
             <label for="descricao" class="form-label">Descrição Detalhada</label>
-            <textarea class="form-control" id="descricao" rows="4" th:field="*{descricao}" required></textarea>
+            <textarea class="form-control" id="descricao" rows="4" th:field="*{descricao}"></textarea>
+            <div class="text-danger" th:if="${#fields.hasErrors('descricao')}" th:errors="*{descricao}"></div>
         </div>
 
         <button type="submit" class="btn btn-primary">Registrar Problema</button>

@@ -3,11 +3,13 @@ package br.com.fiap.mottomap.controller;
 import br.com.fiap.mottomap.model.Problema;
 import br.com.fiap.mottomap.service.MotoService;
 import br.com.fiap.mottomap.service.ProblemaService;
+import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -33,18 +35,29 @@ public class ProblemaController {
         return "problemas/form";
     }
 
-    // Processa o formulário e salva o novo problema
+    // Processa os dados recebidos do formulário para registrar um novo problema
     @PostMapping
-    public String salvarProblema(@ModelAttribute Problema problema,
+    public String salvarProblema(@Valid @ModelAttribute("problema") Problema problema,
+                                 BindingResult result,
                                  @RequestParam Long motoId,
                                  @AuthenticationPrincipal UserDetails userDetails,
+                                 Model model,
                                  RedirectAttributes redirectAttributes) {
 
-        // Delega a lógica de negócio para o serviço
+        // Se a validação dos campos do formulário falhar, retorna para a mesma tela
+        if (result.hasErrors()) {
+            // Recarrega os dados da moto, necessários para renderizar o formulário novamente
+            model.addAttribute("moto", motoService.buscarPorId(motoId));
+            return "problemas/form";
+        }
+
+        // Se a validação passar, chama o serviço para executar a lógica de negócio
         problemaService.registrarNovoProblema(problema, motoId, userDetails);
 
+        // Adiciona uma mensagem de sucesso para ser exibida na próxima página
         redirectAttributes.addFlashAttribute("successMessage", "Problema registrado com sucesso!");
-        // Redireciona de volta para a lista principal de motos
+
+        // Redireciona o usuário para a lista de motos
         return "redirect:/motos";
     }
 
@@ -61,9 +74,8 @@ public class ProblemaController {
         return "redirect:/motos/" + motoId;
     }
 
-    // Ação para o ADM_LOCAL deletar um registro de problema
-    // Uma melhoria futura poderia ser permitir que o ADM_GERAL também delete
-    @PreAuthorize("hasAuthority('ADM_LOCAL')")
+    // Ação para deletar um registro de problema
+    @PreAuthorize("hasAnyAuthority('ADM_GERAL', 'ADM_LOCAL')")
     @GetMapping("/delete/{id}")
     public String deletarProblema(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         // Pega o ID da moto ANTES de deletar para saber para onde voltar
