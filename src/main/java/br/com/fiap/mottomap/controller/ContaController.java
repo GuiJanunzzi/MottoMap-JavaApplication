@@ -54,6 +54,6 @@ public class ContaController {
         }
 
         // Força o logout para que o usuário precise entrar com a nova senha
-        return "redirect:/logout";
+        return "redirect:/login?logout";
     }
 }
