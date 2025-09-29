@@ -46,15 +46,29 @@ public class UsuarioController {
 
     // Processa os dados do formulário para salvar um novo usuário ou uma edição
     @PostMapping
-    public String salvarUsuario(@Valid @ModelAttribute("usuarioDTO") UsuarioDTO usuarioDTO, BindingResult result, Model model, RedirectAttributes attrs) {
+    public String salvarUsuario(@Valid @ModelAttribute("usuarioDTO") UsuarioDTO usuarioDTO,
+                                BindingResult result,
+                                Model model,
+                                RedirectAttributes attrs) {
         if (result.hasErrors()) {
             // Se a validação do DTO falhar, recarrega a lista de filiais e retorna ao formulário
             model.addAttribute("filiais", filialService.buscarTodas());
             return "usuarios/form";
         }
-        // Chama o serviço para salvar o usuário (a lógica de senha e mapeamento está no serviço)
-        usuarioService.salvar(usuarioDTO);
-        attrs.addFlashAttribute("successMessage", "Usuário salvo com sucesso!");
+
+        try {
+            // Chama o serviço para salvar o usuário (a lógica de senha e mapeamento está no serviço)
+            usuarioService.salvar(usuarioDTO);
+            attrs.addFlashAttribute("successMessage", "Usuário salvo com sucesso!");
+
+        } catch (IllegalArgumentException e) {
+            // Captura o erro "senha obrigatória" do serviço
+            // e o adiciona ao BindingResult para ser exibido no formulário.
+            result.rejectValue("password", "password.required", e.getMessage());
+            model.addAttribute("filiais", filialService.buscarTodas());
+            return "usuarios/form";
+        }
+
         return "redirect:/usuarios";
     }
 
