@@ -6,6 +6,7 @@ import br.com.fiap.mottomap.model.Moto;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 // Interface do Spring Data JPA para a entidade Moto.
 public interface MotoRepository extends JpaRepository<Moto, Long>{
@@ -17,4 +18,9 @@ public interface MotoRepository extends JpaRepository<Moto, Long>{
     // O DISTINCT garante que cada moto apareça apenas uma vez, mesmo que tenha vários problemas.
     @Query("SELECT DISTINCT p.moto FROM Problema p WHERE p.resolvido = false AND p.moto.filial.id = :filialId")
     List<Moto> findMotosComProblemasNaoResolvidosNaFilial(Long filialId);
+
+    Optional<Moto> findByPlaca(String placa);
+
+    Optional<Moto> findByChassi(String chassi);
+
 }

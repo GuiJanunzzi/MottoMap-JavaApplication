@@ -8,6 +8,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 // Serviço que agrupa as regras de negócio relacionadas à entidade Moto.
 @Service
@@ -38,6 +39,23 @@ public class MotoService {
 
     // Salva uma nova moto ou atualiza os dados de uma moto existente.
     public void salvar(Moto moto) {
+        // Busca no banco se já existe uma moto com a mesma placa.
+        Optional<Moto> motoExistente = motoRepository.findByPlaca(moto.getPlaca());
+
+        // Se encontrou uma moto, verifica se não é a mesma moto que estamos editando.
+        if (motoExistente.isPresent() && !motoExistente.get().getId().equals(moto.getId())) {
+            // Se for uma moto diferente, lança um erro com uma mensagem clara.
+            throw new IllegalStateException("A placa '" + moto.getPlaca() + "' já está cadastrada no sistema.");
+        }
+
+        // Se encontrou uma moto, verifica se não é a mesma moto que estamos editando.
+        Optional<Moto> motoPorChassi = motoRepository.findByChassi(moto.getChassi());
+        if (motoPorChassi.isPresent() && !motoPorChassi.get().getId().equals(moto.getId())) {
+            // Se for uma moto diferente, lança um erro com uma mensagem clara.
+            throw new IllegalStateException("O chassi '" + moto.getChassi() + "' já está cadastrado no sistema.");
+        }
+
+        // Se a placa for única salva normalmente.
         motoRepository.save(moto);
     }
 

@@ -56,8 +56,20 @@ public class MotoController {
             model.addAttribute("filiais", filialService.buscarTodas());
             return "motos/form";
         }
-        motoService.salvar(moto);
-        redirectAttributes.addFlashAttribute("successMessage", "Moto salva com sucesso!");
+        try {
+            motoService.salvar(moto);
+            redirectAttributes.addFlashAttribute("successMessage", "Moto salva com sucesso!");
+        } catch (IllegalStateException e) {
+            // Captura o erro de placa ou chassi duplicado do serviço
+            if (e.getMessage().contains("placa")) {
+                result.rejectValue("placa", "placa.duplicada", e.getMessage());
+            } else {
+                result.rejectValue("chassi", "chassi.duplicado", e.getMessage());
+            }
+
+            model.addAttribute("filiais", filialService.buscarTodas());
+            return "motos/form";
+        }
         return "redirect:/motos";
     }
 
