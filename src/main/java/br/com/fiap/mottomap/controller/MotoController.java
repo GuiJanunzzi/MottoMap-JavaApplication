@@ -1,5 +1,6 @@
 package br.com.fiap.mottomap.controller;
 
+import br.com.fiap.mottomap.model.CargoUsuario;
 import br.com.fiap.mottomap.model.Moto;
 import br.com.fiap.mottomap.model.Usuario;
 import br.com.fiap.mottomap.service.FilialService;
@@ -42,42 +43,69 @@ public class MotoController {
 
     // Exibe o formulario para cadastrar uma nova moto
     @GetMapping("/new")
-    public String mostrarFormulario(Model model) {
-        model.addAttribute("moto", new Moto());
-        model.addAttribute("filiais", filialService.buscarTodas());
+    public String mostrarFormulario(Model model, @AuthenticationPrincipal Usuario usuarioLogado) {
+        var moto = new Moto();
+        // Diferencia o ADM_LOCAL do ADM_GERAL
+        if (usuarioLogado.getCargoUsuario() == CargoUsuario.ADM_LOCAL) {
+            moto.setFilial(usuarioLogado.getFilial());
+        } else {
+            // A lista de filiais só é enviada para o ADM_GERAL
+            model.addAttribute("filiais", filialService.buscarTodas());
+        }
+        model.addAttribute("moto", moto);
         return "motos/form";
     }
 
     // Processa os dados do formulario para salvar uma moto nova ou editada
     @PostMapping
-    public String salvarMoto(@Valid @ModelAttribute("moto") Moto moto, BindingResult result, Model model, RedirectAttributes redirectAttributes) {
+    public String salvarMoto(@Valid @ModelAttribute("moto") Moto moto,
+                             BindingResult result,
+                             Model model,
+                             RedirectAttributes redirectAttributes,
+                             @AuthenticationPrincipal Usuario usuarioLogado) {
+
+        // Garante que um ADM_LOCAL só pode salvar motos na sua própria filial.
+        if (usuarioLogado.getCargoUsuario() == CargoUsuario.ADM_LOCAL) {
+            if (moto.getFilial().getId() != usuarioLogado.getFilial().getId()) {
+                throw new SecurityException("Acesso negado: tentativa de cadastro em filial não permitida.");
+            }
+        }
+
+        // Checa se há erros das anotações de validação
         if (result.hasErrors()) {
-            // Se a validação falhar, recarrega a lista de filiais e volta ao formulário
-            model.addAttribute("filiais", filialService.buscarTodas());
+            // Se der erro de validação, recarrega os dados necessários e volta ao form
+            if (usuarioLogado.getCargoUsuario() == CargoUsuario.ADM_GERAL) {
+                model.addAttribute("filiais", filialService.buscarTodas());
+            }
             return "motos/form";
         }
+
+        // Tenta salvar a moto, tratando possíveis erros.
         try {
             motoService.salvar(moto);
             redirectAttributes.addFlashAttribute("successMessage", "Moto salva com sucesso!");
         } catch (IllegalStateException e) {
-            // Captura o erro de placa ou chassi duplicado do serviço
-            if (e.getMessage().contains("placa")) {
-                result.rejectValue("placa", "placa.duplicada", e.getMessage());
-            } else {
-                result.rejectValue("chassi", "chassi.duplicado", e.getMessage());
+            // Captura exceções de regras de negócio do serviço (ex: placa ou chassi duplicado).
+            // Adiciona o erro ao campo específico ('placa' ou 'chassi') para ser exibido na tela.
+            result.rejectValue(e.getMessage().contains("placa") ? "placa" : "chassi", "duplicado", e.getMessage());
+            if (usuarioLogado.getCargoUsuario() == CargoUsuario.ADM_GERAL) {
+                model.addAttribute("filiais", filialService.buscarTodas());
             }
-
-            model.addAttribute("filiais", filialService.buscarTodas());
             return "motos/form";
         }
+
+        // redireciona para a lista de motos.
         return "redirect:/motos";
     }
 
     // Exibe o formulário de edição para uma moto específica
     @GetMapping("/edit/{id}")
-    public String mostrarFormularioEdicao(@PathVariable Long id, Model model) {
+    public String mostrarFormularioEdicao(@PathVariable Long id, Model model, @AuthenticationPrincipal Usuario usuarioLogado) {
         model.addAttribute("moto", motoService.buscarPorId(id));
-        model.addAttribute("filiais", filialService.buscarTodas());
+        // Apenas o ADM_GERAL precisa da lista de todas as filiais para (potencialmente) transferir uma moto
+        if (usuarioLogado.getCargoUsuario() == CargoUsuario.ADM_GERAL) {
+            model.addAttribute("filiais", filialService.buscarTodas());
+        }
         return "motos/form";
     }
 

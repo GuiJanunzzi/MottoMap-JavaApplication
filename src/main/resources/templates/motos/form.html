@@ -46,10 +46,18 @@
         </div>
         <div class="mb-3">
             <label for="filial" class="form-label">Filial</label>
-            <select class="form-select" th:field="*{filial}">
-                <option th:each="filial : ${filiais}"
-                        th:value="${filial.id}" th:text="${filial.nome}"></option>
-            </select>
+
+            <div th:if="${filiais != null}">
+                <select class="form-select" th:field="*{filial}" required>
+                    <option th:each="f : ${filiais}"
+                            th:value="${f.id}" th:text="${f.nome}"></option>
+                </select>
+            </div>
+
+            <div th:if="${filiais == null}">
+                <input type="text" class="form-control" th:value="${moto.filial?.nome}" readonly />
+                <input type="hidden" th:field="*{filial}" />
+            </div>
         </div>
 
         <button type="submit" class="btn btn-primary">Salvar</button>
