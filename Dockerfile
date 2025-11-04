@@ -43,4 +43,4 @@ EXPOSE 8080
 
 # Comando para executar a aplicação quando o contêiner iniciar
 # Este é o ponto de entrada da sua aplicação no Azure Web App
-# ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar"]
