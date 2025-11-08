@@ -11,7 +11,7 @@ O **MotoMap** é uma aplicação web full-stack desenvolvida como solução para
 
 A aplicação permite o controle de acesso baseado em perfis de usuário, o gerenciamento completo (CRUD) das principais entidades do sistema e oferece funcionalidades interativas, como um mapa visual do pátio para alocação e liberação de motos em tempo real.
 
----
+--- 
 
 ### ✨ Principais Funcionalidades
 
