@@ -11,7 +11,7 @@ O **MotoMap** é uma aplicação web full-stack desenvolvida como solução para
 
 A aplicação permite o controle de acesso baseado em perfis de usuário, o gerenciamento completo (CRUD) das principais entidades do sistema e oferece funcionalidades interativas, como um mapa visual do pátio para alocação e liberação de motos em tempo real.
 
---- 
+---
 
 ### ✨ Principais Funcionalidades
 
@@ -26,28 +26,63 @@ A aplicação permite o controle de acesso baseado em perfis de usuário, o gere
 
 ### 🛠️ Tecnologias Utilizadas
 
-* **Backend:** Java 17, Spring Boot
+* **Backend:** Java 17, Spring Boot, Spring Data JPA, Spring Security
 * **Frontend:** Thymeleaf, Bootstrap 5
-* **Persistência de Dados:** Spring Data JPA, Hibernate
-* **Banco de Dados:** PostgreSQL (gerenciado via Docker Compose)
-* **Versionamento de Banco de Dados:** Flyway
-* **Segurança:** Spring Security
-* **Build Tool:** Gradle (ou Maven)
+* **Banco de Dados:** **Azure SQL Server**
+* **Versionamento de BD:** **Flyway** (com scripts T-SQL)
+* **Build Tool:** Gradle
+* **Cloud & DevOps:**
+    * **Azure Web App (para Contêineres):** Hospedagem da aplicação.
+    * **Azure DevOps Pipelines:** Orquestração de CI/CD (Modo Clássico).
+    * **Azure Container Registry (ACR):** Armazenamento das imagens Docker.
+    * **Docker:** Containerização da aplicação.
 
 ---
 
-### 🚀 Instalação e Execução
+### 🚀 Acesso à Aplicação (Deploy)
 
-Siga os passos abaixo para executar a aplicação localmente.
+A aplicação está implantada no Azure Web Apps e pode ser acessada através do link abaixo:
+
+**URL:** `https://mottomap-app.azurewebsites.net/`
+
+**Atenção:** Para fins de preservação dos créditos da nossa assinatura Azure, que serão necessários para a Global Solution, a aplicação (Azure Web App) encontra-se **desativada** (offline).
+
+Para a avaliação, pedimos a gentileza de contatar o **Guilherme Janunzzi (RM 558461)** via Microsoft Teams. Ele irá habilitar o serviço na nuvem imediatamente para que a aplicação possa ser corrigida.
+
+---
+
+### 🎬 Vídeo de Demonstração
+
+Assista à demonstração da aplicação em funcionamento para ver suas principais funcionalidades:
+
+* [**Assista ao vídeo no YouTube**](https://youtu.be/9npmTT1md1c)
+
+---
+
+### 🔑 Usuários de Teste
+
+Para testar as diferentes funcionalidades e perfis, utilize os usuários de teste abaixo.
+
+| Usuário (Email) | Senha | Papel (Role) | Principais Acessos |
+| :--- | :--- | :--- | :--- |
+| `admin@mottomap.com` | `admin` | `ADM_GERAL` | Acesso total. Pode gerenciar Usuários, Filiais, Motos e Posições. |
+| `local@mottomap.com` | `local123` | `ADM_LOCAL` | Gerencia Motos e Posições da sua filial (Sede SP). |
+| `patio@mottomap.com` | `patio123` | `COL_PATIO` | Acessa o "Meu Pátio", aloca motos sem posição e movimenta motos nas vagas. |
+| `mecanico@mottomap.com` | `mec123` | `COL_MECANICO` | Vê a lista de "Motos Pendentes" e resolve problemas. |
+---
+
+### 🔧 Executando Localmente (Para Desenvolvimento)
+
+Embora a aplicação esteja configurada para a nuvem, é possível executá-la localmente para fins de desenvolvimento.
+
+**Importante:** Esta aplicação **não** utiliza um banco de dados local (como o H2) ou o Docker para desenvolvimento. É **necessário provisionar um Banco de Dados SQL Server no Azure** e configurar o firewall dele para permitir o acesso da sua máquina local.
 
 #### Pré-requisitos
-
-* [Git](https://git-scm.com/)
-* [Java (JDK) 17](https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html) ou superior
-* [Docker](https://www.docker.com/products/docker-desktop/) e Docker Compose (geralmente já vem com o Docker Desktop)
+* Java (JDK) 17
+* Um Banco de Dados SQL Server ativo no Azure.
+* Credenciais de acesso ao banco de dados Azure SQL Server.
 
 #### Passo a Passo
-
 1.  **Clone o repositório:**
     ```bash
     git clone https://github.com/GuiJanunzzi/MottoMap-JavaApplication.git
@@ -58,41 +93,16 @@ Siga os passos abaixo para executar a aplicação localmente.
     cd MottoMap-JavaApplication
     ```
 
-3.  **Execute a aplicação:**
-    O projeto está configurado com suporte nativo ao Docker Compose. Ao iniciar, um container PostgreSQL será criado e configurado automaticamente. O Flyway cuidará de criar todas as tabelas e popular o banco com dados de teste.
+3.  **Configure as Variáveis de Ambiente:**
+    O projeto está configurado para ler as credenciais do banco a partir de variáveis de ambiente. Você deve configurá-las no seu sistema ou diretamente na sua IDE (IntelliJ, VSCode, etc.):
+    * `DB_URL`: O nome do seu servidor (ex: `meu-servidor.database.windows.net`)
+    * `DB_NAME`: O nome do banco (ex: `mottomap-db`)
+    * `DB_USER`: O seu usuário de login (ex: `admin_mottomap`)
+    * `DB_PSSWD`: Sua senha
 
-    * **Via IDE (Recomendado):**
-        Abra o projeto em sua IDE (IntelliJ, VSCode, etc.) e execute a classe principal `MottoMapJavaApplication.java`.
-
-    * **Via Terminal (Alternativa):**
+4.  **Execute a aplicação:**
+    * **Via IDE (Recomendado):** Inicie a classe principal `MottoMapJavaApplication.java`.
+    * **Via Terminal:**
         ```bash
-        # Se você usa Gradle
         ./gradlew bootRun
-        
-        # Se você usa Maven
-        ./mvnw spring-boot:run
         ```
-
-A aplicação estará disponível em `http://localhost:8080`.
-
----
-
-### 🔑 Acesso à Aplicação
-
-Para testar as diferentes funcionalidades e perfis, utilize os usuários de teste abaixo.
-
-| Usuário (Email)         | Senha      | Papel (Role)   | Principais Acessos                                                              |
-| ----------------------- | ---------- | -------------- | ------------------------------------------------------------------------------- |
-| `admin@mottomap.com`    | `admin` | `ADM_GERAL`    | Acesso total. Pode gerenciar Usuários, Filiais, Motos e Posições.                 |
-| `local@mottomap.com`    | `local123` | `ADM_LOCAL`    | Gerencia Motos e Posições da sua filial. Não pode gerenciar Filiais ou Usuários.  |
-| `patio@mottomap.com`    | `patio123` | `COL_PATIO`    | Acessa o "Meu Pátio", aloca motos sem posição e movimenta motos nas vagas.        |
-| `mecanico@mottomap.com` | `mec123` | `COL_MECANICO` | Vê a lista de "Motos Pendentes", reporta e resolve problemas.                     |
-
----
-
-### 🎬 Vídeo de Demonstração
-
-Assista à demonstração da aplicação em funcionamento para ver suas principais funcionalidades:
-
-* [**Assista ao vídeo no YouTube**](https://youtu.be/MVqHAdwQ_g4)
-
