@@ -212,4 +212,3 @@ class UsuarioServiceTest {
         assertTrue(exception.getMessage().contains("Usuário não encontrado"));
     }
 }
-

@@ -239,4 +239,3 @@ class MotoServiceTest {
         assertTrue(exception.getMessage().contains("Moto não encontrada"));
     }
 }
-
